@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Hack | Английский, который остаётся в голове!</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --accent-blue: #2563eb;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 550px;
+            width: 100%;
+            text-align: center;
+            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Header & Logo */
+        .header {
+            margin-bottom: 2.5rem;
+        }
+
+        .logo-container {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            background: #fff;
+            border: 3px solid #ffffff;
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+            margin-bottom: 0.2rem;
+        }
+
+        .translation {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 0.8rem;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-main);
+            background: linear-gradient(to right, #1e3a8a, #2563eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2rem;
+        }
+
+        /* About Section */
+        .about-section {
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .about-section p {
+            font-size: 1.05rem;
+            color: #334155;
+            text-align: center;
+        }
+
+        /* Links Section */
+        .links-grid {
+            display: grid;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .link-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.1rem;
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 16px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .link-btn:hover {
+            background-color: #f8fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Стили для стандартных иконок */
+        .icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 12px;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        /* Специальный стиль для обрезки фона у Gumroad */
+        .gumroad-icon {
+            border-radius: 50%; /* Делает квадратную картинку круглой */
+            /* Если у картинки внутри есть белые поля, можно раскомментировать строку ниже: */
+            /* clip-path: circle(48%); */
+        }
+
+        /* Кнопка магазина - теперь чуть менее серая */
+        .store-btn {
+            background-color: #f1f5f9; /* Очень легкий серый оттенок */
+            color: var(--text-main);
+            margin-top: 0.5rem;
+        }
+
+        .store-btn:hover {
+            background-color: #e2e8f0; /* Чуть темнее при наведении */
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 3rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Шапка -->
+        <header class="header">
+            <div class="logo-container">
+                <img src="WordHackYouTubeLogo2.jpg" alt="Word Hack Logo">
+            </div>
+            <h1>Word Hack</h1>
+            <div class="translation">(Взлом Слов)</div>
+            <p class="subtitle">Английский, который остаётся в голове!</p>
+        </header>
+
+        <!-- Описание проекта -->
+        <section class="about-section">
+            <p>
+                <strong>Word Hack</strong> - это ваш современный путеводитель в мир быстрого и эффективного изучения английского языка. Мы помогаем «взломать» сложную грамматику, учим реальному разговорному сленгу и делимся лайфхаками, которые помогут вам заговорить уверенно и без стеснения. Присоединяйтесь к нашему сообществу!
+            </p>
+        </section>
+
+        <!-- Ссылки -->
+        <section class="links-grid">
+            <a href="https://www.youtube.com/@WordHack-LS" target="_blank" class="link-btn">
+                <img src="Youtube Logo.png" alt="YouTube" class="icon"> YouTube
+            </a>
+            
+            <a href="https://www.instagram.com/wordhack.l.s?fbclid=IwY2xjawS7LtpleHRuA2FlbQIxMABicmlkETFxaTduR1dKdHZ3T3hNa1kzc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHvXS4-B-IEbHb9limcbBYedWUmi0dAlBjhm2eZ2nhWHPKnGWT-Hiegxa0CNJ_aem_paIlY29QCeK-QF8F2Dt9nA" target="_blank" class="link-btn">
+                <img src="Instagram Logo.png" alt="Instagram" class="icon"> Instagram
+            </a>
+            
+            <a href="https://www.tiktok.com/@word_hack?fbclid=IwY2xjawS7Lt1leHRuA2FlbQIxMABicmlkETFxaTduR1dKdHZ3T3hNa1kzc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHvJrUv0kluLpTc8zdVo1ZGwl4_IVFvt1nGfvPZM9wqbNUWo0YsZxLl08qeKN_aem_AsxMlKI8voKcj-_riWyT2A" target="_blank" class="link-btn">
+                <img src="Tiktok Logo.png" alt="TikTok" class="icon"> TikTok
+            </a>
+            
+            <a href="https://www.facebook.com/profile.php?id=61585497607549" target="_blank" class="link-btn">
+                <img src="Facebook Logo.png" alt="Facebook" class="icon"> Facebook
+            </a>
+
+            <!-- Магазин -->
+            <a href="https://wordhackchannel.gumroad.com/" target="_blank" class="link-btn store-btn">
+                <img src="Gumroad Logo.png" alt="Gumroad" class="icon gumroad-icon"> Магазин цифровых продуктов
+            </a>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Word Hack. Все права защищены.</p>
+    </footer>
+
+</body>
+</html>
