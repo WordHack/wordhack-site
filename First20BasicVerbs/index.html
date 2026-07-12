@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Hack - Базовые глаголы</title>
+    <style>
+        :root {
+            --primary-color: #4F46E5; 
+            --primary-hover: #4338CA;
+            --bg-color: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --hint-color: #059669;
+            --focus-ring: rgba(79, 70, 229, 0.5);
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        #welcome-screen {
+            display: flex; 
+        }
+
+        #game-screen {
+            background: transparent;
+            box-shadow: none;
+            padding: 0;
+            max-width: 450px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin-bottom: 30px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        button {
+            outline: none;
+            touch-action: manipulation;
+        }
+
+        button:focus-visible {
+            box-shadow: 0 0 0 3px var(--focus-ring);
+        }
+
+        .btn-action {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+            margin-top: 20px;
+        }
+
+        .btn-action:hover {
+            background-color: var(--primary-hover);
+            transform: scale(1.05);
+        }
+
+        .btn-action:active {
+            transform: scale(0.98);
+        }
+
+        .card-container {
+            width: 100%;
+            height: 280px;
+            perspective: 1000px;
+            margin-bottom: 25px;
+            cursor: pointer;
+            transition: opacity 0.2s ease-in-out;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+            transform-style: preserve-3d;
+            -webkit-transform-style: preserve-3d; /* Фикс 3D для Safari iOS */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: 20px;
+            user-select: none;
+        }
+
+        .card.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden; /* Фикс исчезновения сторон в Safari */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 20px;
+            background-color: var(--card-bg);
+            padding: 25px;
+            box-sizing: border-box;
+            text-align: center;
+            border: 3px solid #E5E7EB;
+            /* Защита от вылета текста */
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            max-width: 100%;
+        }
+
+        .card-front {
+            color: var(--primary-color);
+        }
+
+        .verb-text {
+            font-size: clamp(2.2rem, 7vw, 3.5rem); /* Уверенно сжимается на мобильных */
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .hint-text-front {
+            font-size: clamp(1.1rem, 4vw, 1.4rem);
+            color: var(--hint-color);
+            margin-top: 15px;
+            font-weight: 600;
+            display: none; 
+            animation: fadeIn 0.3s ease-in;
+            line-height: 1.2;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background-color: #FAFAFA;
+            border-color: var(--primary-color);
+        }
+
+        .card-back .translation {
+            font-size: clamp(1.8rem, 6vw, 2.8rem); /* Предотвращает поломку длинных русских слов */
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.2;
+        }
+
+        .audio-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            width: 100%;
+        }
+
+        .audio-btn {
+            flex: 1;
+            padding: 14px 10px;
+            background-color: white;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .audio-btn:hover {
+            background-color: #EEF2FF;
+            transform: translateY(-2px);
+        }
+
+        .audio-btn:active {
+            transform: translateY(0);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background-color: #E5E7EB;
+            color: var(--text-main);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: #D1D5DB;
+        }
+
+        .nav-btn.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .nav-btn.primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .progress {
+            font-weight: bold;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .instruction {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #9CA3AF;
+            text-align: center;
+        }
+
+        #error-log {
+            color: #EF4444;
+            margin-top: 15px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-align: center;
+            max-width: 400px;
+            min-height: 24px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="welcome-screen" class="screen">
+        <h1>Word Hack</h1>
+        <div class="subtitle">
+            <strong>Базовые глаголы</strong>
+        </div>
+        <button class="btn-action" onclick="enterApp()">Войти</button>
+    </div>
+
+    <div id="start-screen" class="screen">
+        <div class="subtitle" style="margin-top: 20px;">
+            Первые 20 самых важных глаголов английского языка с аудио-ассоциациями.
+        </div>
+        <button class="btn-action" onclick="startGame()">Поехали!!</button>
+    </div>
+
+    <div id="game-screen" class="screen">
+        <h1 style="font-size: 22px; margin-bottom: 20px;">Базовые глаголы</h1>
+        
+        <div class="card-container" id="card-container" onclick="flipCard()">
+            <div class="card" id="flashcard">
+                <div class="card-face card-front">
+                    <span class="verb-text" id="verb-text"></span>
+                    <div class="hint-text-front" id="hint-text-front"></div>
+                </div>
+                <div class="card-face card-back">
+                    <div class="translation" id="translation-text"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="audio-controls">
+            <button class="audio-btn" onclick="playHint('short', event)">
+                🔊 Подсказка
+            </button>
+            <button class="audio-btn" onclick="playHint('full', event)">
+                🔊 Полная подсказка
+            </button>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn" id="prev-btn" onclick="prevCard(event)">Назад</button>
+            <span class="progress" id="progress-text"></span>
+            <button class="nav-btn primary" id="next-btn" onclick="nextCard(event)">Вперед</button>
+        </div>
+
+        <div class="instruction">Кликните по самой карточке, чтобы перевернуть её</div>
+        
+        <div id="error-log"></div>
+    </div>
+
+    <div id="end-screen" class="screen">
+        <h1>🏁 Финиш! 🏁</h1>
+        <div class="subtitle">
+            Первые 20 глаголов пройдены!<br><br>
+            Готовы повторить?
+        </div>
+        <button class="btn-action" onclick="restartGame()">Опять!</button>
+    </div>
+
+    <script>
+        const cardsData = [
+            { verb: "To be", translation: "Быть", shortFile: "Be - Буква Би.mp3", fullFile: "To be.mp3", hintText: "Буква Би" },
+            { verb: "To call", translation: "Звать, звонить", shortFile: "Call - Кол.mp3", fullFile: "To Call.mp3", hintText: "Кол" },
+            { verb: "To come", translation: "Приходить", shortFile: "Come - Камин.mp3", fullFile: "To Come.mp3", hintText: "Камин" },
+            { verb: "To do", translation: "Делать", shortFile: "Do - Дуй.mp3", fullFile: "To Do.mp3", hintText: "Дуй" },
+            { verb: "To find", translation: "Найти", shortFile: "Find - Фонд.mp3", fullFile: "To Find.mp3", hintText: "Фонд" },
+            { verb: "To get", translation: "Получить", shortFile: "Get - Багет.mp3", fullFile: "To Get.mp3", hintText: "Багет" },
+            { verb: "To give", translation: "Давать", shortFile: "Give - Гав Гав.mp3", fullFile: "To Give.mp3", hintText: "Гав Гав" },
+            { verb: "To go", translation: "Идти", shortFile: "Go - Игого.mp3", fullFile: "To Go.mp3", hintText: "Игого" },
+            { verb: "To have", translation: "Иметь", shortFile: "Have - Хавать.mp3", fullFile: "To Have.mp3", hintText: "Хавать" },
+            { verb: "To know", translation: "Знать", shortFile: "Know - Но у него.mp3", fullFile: "To Know.mp3", hintText: "Но у него" },
+            { verb: "To make", translation: "Создавать", shortFile: "Make - Маяк.mp3", fullFile: "To Make.mp3", hintText: "Маяк" },
+            { verb: "To say", translation: "Сказать", shortFile: "Say - Сейф.mp3", fullFile: "To Say.mp3", hintText: "Сейф" },
+            { verb: "To see", translation: "Видеть", shortFile: "See - Буква Си.mp3", fullFile: "To See.mp3", hintText: "Буква Си" },
+            { verb: "To take", translation: "Взять", shortFile: "Take - Стейк.mp3", fullFile: "To Take.mp3", hintText: "Стейк" },
+            { verb: "To tell", translation: "Рассказать", shortFile: "Tell - Таллант.mp3", fullFile: "To Tell.mp3", hintText: "Талант" },
+            { verb: "To think", translation: "Думать", shortFile: "Think - Финик.mp3", fullFile: "To Think.mp3", hintText: "Финик" },
+            { verb: "To try", translation: "Пытаться", shortFile: "Try - Тройник.mp3", fullFile: "To Try.mp3", hintText: "Тройник" },
+            { verb: "To use", translation: "Использовать", shortFile: "Use - Союз.mp3", fullFile: "To Use.mp3", hintText: "Союз" },
+            { verb: "To want", translation: "Хотеть", shortFile: "Want - Вон там.mp3", fullFile: "To want.mp3", hintText: "Вон там" },
+            { verb: "To work", translation: "Работать", shortFile: "Work - Вор, который.mp3", fullFile: "To Work.mp3", hintText: "Вор, который" }
+        ];
+
+        let currentIndex = 0;
+        let currentAudio = null;
+
+        const dom = {
+            cardContainer: document.getElementById('card-container'),
+            flashcard: document.getElementById('flashcard'),
+            verbText: document.getElementById('verb-text'),
+            translationText: document.getElementById('translation-text'),
+            hintTextFront: document.getElementById('hint-text-front'),
+            progressText: document.getElementById('progress-text'),
+            prevBtn: document.getElementById('prev-btn'),
+            nextBtn: document.getElementById('next-btn'),
+            errorLog: document.getElementById('error-log'),
+            screens: {
+                welcome: document.getElementById('welcome-screen'),
+                start: document.getElementById('start-screen'),
+                game: document.getElementById('game-screen'),
+                end: document.getElementById('end-screen')
+            }
+        };
+
+        function switchScreen(hideScreen, showScreen) {
+            hideScreen.style.display = 'none';
+            showScreen.style.display = 'flex';
+        }
+
+        function playSound(filename) {
+            dom.errorLog.innerText = ""; 
+            
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+            }
+            
+            currentAudio = new Audio(filename);
+            currentAudio.play().catch(e => {
+                console.error("Audio error:", e);
+                dom.errorLog.innerText = `⚠️ Файл не найден: "${filename}"`;
+            });
+        }
+
+        function enterApp() {
+            switchScreen(dom.screens.welcome, dom.screens.start);
+            playSound('Intro.mp3');
+        }
+
+        function startGame() {
+            if (currentAudio) currentAudio.pause();
+            switchScreen(dom.screens.start, dom.screens.game);
+            currentIndex = 0;
+            updateCardDOM(); 
+        }
+
+        function finishGame() {
+            switchScreen(dom.screens.game, dom.screens.end);
+            playSound('End.mp3');
+        }
+
+        function restartGame() {
+            if (currentAudio) currentAudio.pause();
+            switchScreen(dom.screens.end, dom.screens.game);
+            currentIndex = 0;
+            updateCardDOM();
+        }
+
+        function playHint(type, event) {
+            if (event) event.stopPropagation(); 
+            
+            const card = cardsData[currentIndex];
+            if (type === 'short') {
+                playSound(card.shortFile);
+                dom.hintTextFront.innerText = card.hintText;
+                dom.hintTextFront.style.display = 'block';
+            } else {
+                playSound(card.fullFile);
+            }
+        }
+
+        // Переворот карточки по клику
+        function flipCard() {
+            dom.flashcard.classList.toggle('is-flipped');
+        }
+
+        function updateCardDOM() {
+            // Отключаем 3D анимацию, чтобы карточка сбросилась на лицевую сторону мгновенно и незаметно
+            dom.flashcard.style.transition = 'none';
+            dom.flashcard.classList.remove('is-flipped');
+            
+            // Вызываем reflow для мгновенного применения стилей браузером
+            void dom.flashcard.offsetHeight;
+            
+            // Возвращаем плавную анимацию переворота обратно
+            dom.flashcard.style.transition = 'transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1)';
+            
+            dom.errorLog.innerText = ""; 
+            dom.hintTextFront.style.display = 'none';
+            dom.hintTextFront.innerText = "";
+            
+            const card = cardsData[currentIndex];
+            dom.verbText.innerText = card.verb;
+            dom.translationText.innerText = card.translation;
+            dom.progressText.innerText = `${currentIndex + 1} / ${cardsData.length}`;
+            
+            dom.prevBtn.disabled = currentIndex === 0;
+            dom.nextBtn.innerText = (currentIndex === cardsData.length - 1) ? "Завершить" : "Вперед";
+        }
+
+        function animateCardChange(changeIndexCallback) {
+            dom.cardContainer.style.opacity = '0';
+            
+            setTimeout(() => {
+                changeIndexCallback();
+                updateCardDOM();
+                dom.cardContainer.style.opacity = '1';
+            }, 200);
+        }
+
+        function nextCard(event) {
+            if (event) event.stopPropagation();
+            if (currentAudio) currentAudio.pause();
+            
+            if (currentIndex < cardsData.length - 1) {
+                animateCardChange(() => { currentIndex++; });
+            } else {
+                finishGame();
+            }
+        }
+
+        function prevCard(event) {
+            if (event) event.stopPropagation();
+            if (currentAudio) currentAudio.pause();
+            
+            if (currentIndex > 0) {
+                animateCardChange(() => { currentIndex--; });
+            }
+        }
+    </script>
+</body>
+</html>
