@@ -1,228 +1,359 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <link rel="icon" type="image/png" href="favicon.jpg">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Hack | Английский, который остаётся в голове!</title>
+    <title>Word Hack | Словарь фейлов (Демо)</title>
     <style>
-        :root {
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --accent-blue: #2563eb;
-            --border-color: #e2e8f0;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); color: #2d3436; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .global-mute { position: fixed; top: 15px; right: 15px; background: rgba(255, 255, 255, 0.5); border: none; border-radius: 50%; width: 54px; height: 54px; font-size: 26px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1); backdrop-filter: blur(10px); z-index: 9999; display: flex; align-items: center; justify-content: center; transition: transform 0.2s, background 0.2s; }
+        .global-mute:active { transform: scale(0.9); }
+        .global-mute:hover { background: rgba(255, 255, 255, 0.8); }
+        .mute-toast { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); background: rgba(255, 255, 255, 0.95); box-shadow: 0 10px 40px rgba(0,0,0,0.15); color: #2d3436; padding: 30px 40px; border-radius: 24px; z-index: 10000; opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .mute-toast.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        .mute-toast-icon { font-size: 50px; }
+        .mute-toast-text { font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; color: #636e72; }
+        .app-container { background: #ffffff; width: 90%; max-width: 420px; border-radius: 24px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1); padding: 30px 20px; box-sizing: border-box; position: relative; overflow: hidden; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
+        .start-screen { text-align: center; padding: 20px 10px; display: block; }
+        .start-icon { font-size: 70px; margin-bottom: 20px; animation: float 3s ease-in-out infinite; }
+        .start-title-container { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .start-title-container h1 { font-size: 36px; font-weight: 800; color: #2d3436; letter-spacing: -1px; line-height: 1.1; margin: 0; }
+        .start-screen p { font-size: 16px; color: #636e72; line-height: 1.5; margin-bottom: 35px; }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 2rem 1rem;
-        }
+        #game-screen { display: none; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; font-size: 14px; font-weight: 600; color: #b2bec3; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-controls { display: flex; align-items: center; gap: 12px; background: #f1f2f6; padding: 6px 14px; border-radius: 20px; }
+        .nav-arrow { background: none; border: none; font-size: 16px; color: #636e72; cursor: pointer; padding: 0 5px; transition: color 0.2s; display: flex; align-items: center; justify-content: center; }
+        .nav-arrow:hover:not(:disabled) { color: #2d3436; }
+        .nav-arrow:disabled { color: #dfe4ea; cursor: default; }
 
-        .container {
-            max-width: 550px;
-            width: 100%;
-            text-align: center;
-            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+        .word-section { text-align: center; margin-bottom: 30px; position: relative; }
+        .word { font-size: 42px; font-weight: 800; color: #2d3436; margin: 0; letter-spacing: -0.5px; }
 
-        /* Header & Logo */
-        .header {
-            margin-bottom: 2.5rem;
-        }
+        .audio-btn { background: #f1f2f6; border: none; border-radius: 50%; width: 46px; height: 46px; font-size: 22px; cursor: pointer; margin-top: 15px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 4px 10px rgba(0,0,0,0.05); display: inline-flex; align-items: center; justify-content: center; }
+        .audio-btn:active { transform: scale(0.9); background: #dfe4ea; }
+        .audio-btn.playing, .inline-audio-btn.playing { transform: scale(1.15); background: #a29bfe !important; box-shadow: 0 0 15px rgba(162, 155, 254, 0.6); color: white; }
 
-        .logo-container {
-            width: 150px;
-            height: 150px;
-            margin: 0 auto 1.5rem;
-            border-radius: 50%;
-            overflow: hidden;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-            background: #fff;
-            border: 3px solid #ffffff;
-        }
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+        .option-btn { background: #f8f9fa; border: 2px solid #f1f2f6; padding: 14px 18px; border-radius: 16px; font-size: 16px; font-weight: 600; color: #2d3436; cursor: pointer; transition: all 0.2s ease; display: flex; justify-content: space-between; align-items: center; text-align: left; }
+        .option-btn:not(.answered):hover { border-color: #a29bfe; background: #fbfbff; }
+        .option-text { flex: 1; padding-right: 10px; }
 
-        .logo-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .inline-audio-btn { background: rgba(0,0,0,0.05); border: none; border-radius: 50%; width: 38px; height: 38px; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); flex-shrink: 0; }
+        .inline-audio-btn:hover { background: rgba(0,0,0,0.1); }
 
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            color: var(--text-main);
-            margin-bottom: 0.2rem;
-        }
+        .read-all-btn { background: transparent; border: 2px dashed #b2bec3; color: #636e72; padding: 12px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 12px; transition: all 0.2s ease; }
+        .read-all-btn:hover { border-color: #a29bfe; color: #6c5ce7; background: rgba(162, 155, 254, 0.05); }
+        .read-all-btn.playing { background: rgba(162, 155, 254, 0.15); border-style: solid; border-color: #6c5ce7; color: #6c5ce7; }
 
-        .translation {
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: var(--text-muted);
-            margin-bottom: 0.8rem;
-        }
+        .option-btn.correct { background: #f6ffed; border-color: #73d13d; color: #389e0d; }
+        .option-btn.wrong { background: #fff1f0; border-color: #ff4d4f; color: #cf1322; }
 
-        .subtitle {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--text-main);
-            background: linear-gradient(to right, #1e3a8a, #2563eb);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 2rem;
-        }
+        .explanation-box { margin-top: 20px; padding: 18px; border-radius: 16px; font-size: 15px; line-height: 1.5; display: none; animation: fadeIn 0.4s ease; }
+        .explanation-box.show-correct { display: block; background: #f6ffed; color: #389e0d; }
+        .explanation-box.show-wrong { display: block; background: #fff1f0; color: #cf1322; }
 
-        /* About Section */
-        .about-section {
-            background-color: var(--card-bg);
-            padding: 1.5rem;
-            border-radius: 20px;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            border: 1px solid var(--border-color);
-            text-align: left;
-        }
+        .exp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .explanation-title { font-weight: 800; font-size: 16px; }
 
-        .about-section p {
-            font-size: 1.05rem;
-            color: #334155;
-            text-align: center;
-        }
+        .main-action-btn { width: 100%; padding: 18px; border: none; border-radius: 16px; background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%); color: white; font-size: 18px; font-weight: 700; cursor: pointer; box-shadow: 0 10px 20px rgba(108, 92, 231, 0.3); transition: all 0.2s ease; }
+        .main-action-btn:active { transform: translateY(2px); box-shadow: 0 5px 10px rgba(108, 92, 231, 0.2); }
+        .next-btn { margin-top: 20px; display: none; animation: fadeIn 0.4s ease; }
 
-        /* Links Section */
-        .links-grid {
-            display: grid;
-            gap: 1rem;
-            width: 100%;
-        }
-
-        .link-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.1rem;
-            background-color: var(--card-bg);
-            color: var(--text-main);
-            text-decoration: none;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 16px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
-        }
-
-        .link-btn:hover {
-            background-color: #f8fafc;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-        }
-
-        /* Стили для стандартных иконок */
-        .icon {
-            width: 24px;
-            height: 24px;
-            margin-right: 12px;
-            object-fit: contain;
-            border-radius: 4px;
-        }
-
-        /* Специальный стиль для обрезки фона у Gumroad */
-        .gumroad-icon {
-            border-radius: 50%; /* Делает квадратную картинку круглой */
-            /* Если у картинки внутри есть белые поля, можно раскомментировать строку ниже: */
-            /* clip-path: circle(48%); */
-        }
-
-        /* Кнопка магазина - теперь чуть менее серая */
-        .store-btn {
-            background-color: #f1f5f9; /* Очень легкий серый оттенок */
-            color: var(--text-main);
-            margin-top: 0.5rem;
-        }
-
-        .store-btn:hover {
-            background-color: #e2e8f0; /* Чуть темнее при наведении */
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
-        }
-
-        /* Footer */
-        footer {
-            margin-top: 3rem;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <!-- Шапка -->
-        <header class="header">
-            <div class="logo-container">
-                <img src="WordHackYouTubeLogo2.jpg" alt="Word Hack Logo">
-            </div>
-            <h1>Word Hack</h1>
-            <div class="translation">(Взлом Слов)</div>
-            <p class="subtitle">Английский, который остаётся в голове!</p>
-        </header>
+<button class="global-mute" id="mute-toggle" onclick="toggleMute()">🔊</button>
 
-        <!-- Описание проекта -->
-        <section class="about-section">
-            <p>
-                <strong>Word Hack</strong> - это ваш современный путеводитель в мир быстрого и эффективного изучения английского языка. Мы помогаем «взломать» сложную грамматику, учим реальному разговорному сленгу и делимся лайфхаками, которые помогут вам заговорить уверенно и без стеснения. Присоединяйтесь к нашему сообществу!
-            </p>
-        </section>
+<div class="mute-toast" id="mute-toast"><div class="mute-toast-icon" id="toast-icon">🔇</div><div class="mute-toast-text" id="toast-text">Звук выключен</div></div>
 
-        <!-- Ссылки -->
-        <section class="links-grid">
-            <a href="https://www.youtube.com/@WordHack-LS" target="_blank" class="link-btn">
-                <img src="Youtube Logo.png" alt="YouTube" class="icon"> YouTube
-            </a>
-            
-            <a href="https://www.instagram.com/wordhack.l.s?fbclid=IwY2xjawS7LtpleHRuA2FlbQIxMABicmlkETFxaTduR1dKdHZ3T3hNa1kzc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHvXS4-B-IEbHb9limcbBYedWUmi0dAlBjhm2eZ2nhWHPKnGWT-Hiegxa0CNJ_aem_paIlY29QCeK-QF8F2Dt9nA" target="_blank" class="link-btn">
-                <img src="Instagram Logo.png" alt="Instagram" class="icon"> Instagram
-            </a>
-            
-            <a href="https://www.tiktok.com/@word_hack?fbclid=IwY2xjawS7Lt1leHRuA2FlbQIxMABicmlkETFxaTduR1dKdHZ3T3hNa1kzc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHvJrUv0kluLpTc8zdVo1ZGwl4_IVFvt1nGfvPZM9wqbNUWo0YsZxLl08qeKN_aem_AsxMlKI8voKcj-_riWyT2A" target="_blank" class="link-btn">
-                <img src="Tiktok Logo.png" alt="TikTok" class="icon"> TikTok
-            </a>
-            
-            <a href="https://www.facebook.com/profile.php?id=61585497607549" target="_blank" class="link-btn">
-                <img src="Facebook Logo.png" alt="Facebook" class="icon"> Facebook
-            </a>
-
-            <!-- Магазин -->
-            <a href="https://wordhackchannel.gumroad.com/" target="_blank" class="link-btn store-btn">
-                <img src="Gumroad Logo.png" alt="Gumroad" class="icon gumroad-icon"> Магазин цифровых продуктов
-            </a>
-        </section>
+<div class="app-container" id="app">
+    
+    <div id="start-screen" class="start-screen">
+        <div class="start-icon">🌍</div>
+        <div class="start-title-container">
+            <h1>Fail Словарь</h1>
+            <button class="inline-audio-btn" id="start-audio-btn" onclick="playAudio('audio/start.mp3', this)">🔊</button>
+        </div>
+        <p>Слова-предатели, которые постоянно вводят русскоговорящих в заблуждение за границей. Проверь себя и больше не попадайся в эти ловушки!</p>
+        <button class="main-action-btn" onclick="startGame()">Начать тест 🚀</button>
     </div>
 
-    <footer>
-        <p>&copy; 2026 Word Hack. Все права защищены.</p>
-    </footer>
+    <div id="game-screen">
+        <div class="header">
+            <span>Фейл-словарь</span>
+            <div class="nav-controls">
+                <button class="nav-arrow" id="prev-arrow" onclick="prevWord()">❮</button>
+                <span id="counter">1 / 20</span>
+                <button class="nav-arrow" id="next-arrow" onclick="nextWord(true)">❯</button>
+            </div>
+        </div>
+
+        <div class="word-section">
+            <h1 class="word" id="word-display">Word</h1>
+            <button class="audio-btn" id="main-audio-btn" onclick="playAudio(`audio/word_${currentIndex}.mp3`, this)">🔊</button>
+        </div>
+
+        <div class="options-grid" id="options-container"></div>
+
+        <button class="read-all-btn" id="read-all-btn" onclick="playAllOptions()">Озвучить всё 🔊</button>
+
+        <div class="explanation-box" id="explanation-box">
+            <div class="exp-header">
+                <div class="explanation-title" id="exp-title">Правильно!</div>
+                <button class="inline-audio-btn" id="exp-audio-btn" onclick="playExplanationAudio(this)">🔊</button>
+            </div>
+            <div id="exp-text">Текст объяснения</div>
+        </div>
+
+        <button class="main-action-btn next-btn" id="next-btn" onclick="nextWord()">Дальше</button>
+    </div>
+</div>
+
+<script>
+    // ⚡ НАСТРОЙКА СКОРОСТИ
+    const AUDIO_SPEED = 1.3; 
+
+    // Оставлены только первые 3 слова для демо-версии
+    const quizData = [
+        { word: "Magazine", correct: "Глянцевый журнал", wrongs: ["Продуктовый магазин", "Склад боеприпасов", "Секретный бункер с молоком"], explanation: "Магазин продуктов называют store или supermarket. Magazine просто читают." },
+        { word: "Fabric", correct: "Ткань, материал", wrongs: ["Фабрика или завод", "Фабрикация", "Секретный цех чупа-чупсов"], explanation: "Завод — factory. Fabric используют, чтобы шить одежду." },
+        { word: "Velvet", correct: "Роскошный бархат", wrongs: ["Вельвет в рубчик", "Вельветовые штаны", "Секретный агент в костюме"], explanation: "Наш вельвет в рубчик — corduroy. Velvet означает гладкий дорогой бархат." }
+    ];
+
+    let currentIndex = 0;
+    let isAnswered = false;
+    let isMuted = false;
+    let userAnswers = new Array(quizData.length).fill(null);
+
+    let currentAudio = null;
+    let activeBtn = null;
+    let sequenceTimeout = null;
+
+    function stopAudio() {
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+        }
+        clearTimeout(sequenceTimeout);
+        if (activeBtn) {
+            activeBtn.classList.remove('playing');
+            activeBtn = null;
+        }
+    }
+
+    function toggleMute() {
+        isMuted = !isMuted;
+        document.getElementById('mute-toggle').innerText = isMuted ? '🔇' : '🔊';
+        const toast = document.getElementById('mute-toast');
+        document.getElementById('toast-icon').innerText = isMuted ? '🔇' : '🔊';
+        document.getElementById('toast-text').innerText = isMuted ? 'Звук выключен' : 'Звук включен';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 1000);
+        if (isMuted) stopAudio();
+    }
+
+    function playAudio(filePath, btnElement, onEndedCallback) {
+        if (isMuted) return;
+        
+        if (activeBtn === btnElement && currentAudio && !currentAudio.paused) {
+            stopAudio(); return; 
+        }
+        
+        stopAudio();
+        activeBtn = btnElement;
+        if (activeBtn) activeBtn.classList.add('playing');
+
+        currentAudio = new Audio(filePath);
+        currentAudio.playbackRate = AUDIO_SPEED; 
+        currentAudio.play().catch(e => console.log("Аудиофайл не найден:", filePath));
+        
+        currentAudio.onended = () => {
+            if (activeBtn === btnElement) {
+                activeBtn.classList.remove('playing');
+                activeBtn = null;
+            }
+            if (onEndedCallback) onEndedCallback();
+        };
+    }
+
+    function playAllOptions() {
+        if (isMuted) return;
+        const readAllBtn = document.getElementById('read-all-btn');
+        if (activeBtn === readAllBtn) { stopAudio(); return; }
+
+        stopAudio();
+        activeBtn = readAllBtn;
+        readAllBtn.classList.add('playing');
+
+        const optionButtons = Array.from(document.querySelectorAll('.option-btn'));
+        let optIndex = 0;
+
+        function playNextOpt() {
+            if (optIndex >= optionButtons.length || activeBtn !== readAllBtn) {
+                readAllBtn.classList.remove('playing');
+                activeBtn = null;
+                return;
+            }
+            
+            let filePath = optionButtons[optIndex].getAttribute('data-audio-path');
+            currentAudio = new Audio(filePath);
+            currentAudio.playbackRate = AUDIO_SPEED; 
+            currentAudio.play().catch(e => console.log("Файл не найден:", filePath));
+            
+            currentAudio.onended = () => {
+                optIndex++;
+                sequenceTimeout = setTimeout(playNextOpt, 100); 
+            };
+        }
+        playNextOpt();
+    }
+
+    function playExplanationAudio(btnElement) {
+        const wasCorrect = userAnswers[currentIndex] === true;
+        const filePath = wasCorrect ? `audio/exp_corr_${currentIndex}.mp3` : `audio/exp_wrong_${currentIndex}.mp3`;
+        playAudio(filePath, btnElement);
+    }
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function updateNavArrows() {
+        document.getElementById('prev-arrow').disabled = currentIndex === 0;
+        // На третьем слове (последнем в демо) стрелка больше не блокируется
+        document.getElementById('next-arrow').disabled = false;
+    }
+
+    function startGame() {
+        stopAudio();
+        document.getElementById('start-screen').style.display = 'none';
+        document.getElementById('game-screen').style.display = 'block';
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        isAnswered = false;
+        const currentData = quizData[currentIndex];
+        
+        document.getElementById('word-display').innerText = currentData.word;
+        // Счетчик всегда показывает "из 20"
+        document.getElementById('counter').innerText = `${currentIndex + 1} / 20`;
+        
+        document.getElementById('explanation-box').className = 'explanation-box';
+        document.getElementById('next-btn').style.display = 'none';
+        
+        updateNavArrows();
+        stopAudio();
+
+        let options = [
+            { text: currentData.correct, isCorrect: true, audio: `audio/opt_corr_${currentIndex}.mp3` },
+            { text: currentData.wrongs[0], isCorrect: false, audio: `audio/opt_w1_${currentIndex}.mp3` },
+            { text: currentData.wrongs[1], isCorrect: false, audio: `audio/opt_w2_${currentIndex}.mp3` },
+            { text: currentData.wrongs[2], isCorrect: false, audio: `audio/opt_w3_${currentIndex}.mp3` }
+        ];
+        options = shuffle(options);
+
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        
+        options.forEach(opt => {
+            const btn = document.createElement('div');
+            btn.className = 'option-btn';
+            btn.setAttribute('data-audio-path', opt.audio);
+            
+            const spanText = document.createElement('span');
+            spanText.className = 'option-text';
+            spanText.innerText = opt.text;
+            
+            const audioBtn = document.createElement('button');
+            audioBtn.className = 'inline-audio-btn';
+            audioBtn.innerText = '🔊';
+            audioBtn.onclick = (e) => {
+                e.stopPropagation(); 
+                playAudio(opt.audio, audioBtn); 
+            };
+
+            btn.appendChild(spanText);
+            btn.appendChild(audioBtn);
+            
+            btn.onclick = () => checkAnswer(btn, opt.isCorrect, currentData);
+            container.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(clickedBtn, isCorrect, currentData) {
+        if (isAnswered) return;
+        isAnswered = true;
+
+        userAnswers[currentIndex] = isCorrect;
+
+        const allBtns = document.querySelectorAll('.option-btn');
+        const expBox = document.getElementById('explanation-box');
+        const expTitle = document.getElementById('exp-title');
+        const expText = document.getElementById('exp-text');
+
+        allBtns.forEach(btn => btn.classList.add('answered'));
+
+        if (isCorrect) {
+            clickedBtn.classList.add('correct');
+            expBox.classList.add('show-correct');
+            expTitle.innerText = "Правильно!";
+        } else {
+            clickedBtn.classList.add('wrong');
+            expBox.classList.add('show-wrong');
+            expTitle.innerText = "Неверно!";
+            allBtns.forEach(btn => {
+                if (btn.querySelector('.option-text').innerText === currentData.correct) {
+                    btn.classList.add('correct');
+                }
+            });
+        }
+
+        expText.innerText = currentData.explanation;
+        
+        if (currentIndex < quizData.length - 1) {
+            document.getElementById('next-btn').innerText = "Дальше";
+            document.getElementById('next-btn').style.display = 'block';
+        } else {
+            document.getElementById('next-btn').innerText = "Получить полную версию 🔓";
+            document.getElementById('next-btn').style.display = 'block';
+        }
+
+        playExplanationAudio(document.getElementById('exp-audio-btn'));
+    }
+
+    function prevWord() {
+        if (currentIndex > 0) { currentIndex--; loadQuestion(); }
+    }
+
+    function nextWord(isSkip = false) {
+        if (currentIndex < quizData.length - 1) {
+            currentIndex++; 
+            loadQuestion();
+        } else {
+            if (isSkip) {
+                // Если кликнули на стрелку ">" на третьем слове
+                const btn = document.getElementById('next-btn');
+                btn.innerText = "Получить полную версию 🔓";
+                btn.style.display = 'block';
+                // Прокручиваем к кнопке, чтобы юзер ее точно увидел
+                btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                // Если кликнули на саму кнопку
+                window.location.href = "https://wordhackchannel.gumroad.com/";
+            }
+        }
+    }
+</script>
 
 </body>
 </html>
