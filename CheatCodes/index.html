@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Hack | Grammar Cheat-Codes</title>
+    <style>
+        :root {
+            --bg-color: #0f172a; 
+            --card-bg: #ffffff; 
+            
+            --primary: #0ea5e9;
+            --primary-hover: #0284c7;
+            
+            --text-main: #334155; 
+            --text-muted: #64748b; 
+            
+            --correct: #10b981;
+            --wrong: #ef4444;
+            --border-light: #e2e8f0;
+            --box-bg: #f8fafc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            line-height: 1.6;
+            padding: 15px;
+        }
+
+        .app-container {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+            width: 100%;
+            max-width: 550px;
+            height: 760px; /* Оптимальная высота, чтобы всё помещалось без обрезания рамок */
+            max-height: 95vh;
+            padding: 2rem; /* Равномерные отступы со всех сторон */
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border-top: 5px solid var(--primary);
+            text-align: center;
+            display: flex;
+            flex-direction: column; /* Важно для равномерного распределения */
+        }
+
+        /* МАГИЯ РАСПРЕДЕЛЕНИЯ ПРОСТРАНСТВА */
+        .content-wrapper {
+            flex-grow: 1; /* Занимает всё свободное место */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Центрирует контент по вертикали, убирая пустые "дыры" внизу */
+            width: 100%;
+            padding: 1rem 0;
+        }
+
+        .header {
+            margin-bottom: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-size: 1.7rem;
+            color: #0f172a;
+            letter-spacing: 1px;
+            margin-bottom: 0.1rem;
+        }
+
+        .header h1 span {
+            color: var(--primary);
+        }
+        
+        .header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+        
+        .top-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            flex-shrink: 0;
+        }
+
+        .progress-container {
+            background: var(--border-light);
+            border-radius: 10px;
+            height: 8px;
+            width: 100%;
+            margin-bottom: 0.8rem;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .progress-bar {
+            background: var(--primary);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .mute-btn {
+            background: none;
+            border: 1px solid var(--border-light);
+            color: var(--text-muted);
+            padding: 0.3rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+        
+        .mute-btn:hover {
+            background: var(--box-bg);
+            color: var(--text-main);
+        }
+
+        .mute-btn.muted {
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: #fca5a5;
+        }
+
+        .audio-btn {
+            background-color: #f0f9ff;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 1rem;
+            display: inline-flex;
+            align-items: center;
+            align-self: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .audio-btn:hover {
+            background-color: var(--primary);
+            color: #ffffff;
+        }
+
+        .audio-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+        
+        .feedback-audio-btn {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .options-audio-btn {
+            font-size: 0.85rem;
+            padding: 0.4rem 0.8rem;
+            margin-top: 0.8rem;
+            margin-bottom: 0;
+            background-color: var(--box-bg);
+            border: 1px solid var(--border-light);
+            color: var(--text-muted);
+        }
+
+        .options-audio-btn:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+            background-color: #f0f9ff;
+        }
+
+        .scenario-box {
+            background: var(--box-bg);
+            border: 1px solid var(--border-light);
+            padding: 1.2rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+            border-left: 4px solid var(--primary);
+            text-align: left;
+            color: var(--text-main);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            width: 100%;
+        }
+
+        .option-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: stretch;
+        }
+
+        .option-btn {
+            flex-grow: 1;
+            background-color: #ffffff;
+            color: var(--text-main);
+            border: 2px solid var(--border-light);
+            padding: 0.85rem;
+            border-radius: 8px;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            background-color: #f0f9ff;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+        }
+
+        .option-btn.correct {
+            background-color: #d1fae5;
+            border-color: var(--correct);
+            color: #065f46;
+        }
+
+        .option-btn.wrong {
+            background-color: #fee2e2;
+            border-color: var(--wrong);
+            color: #991b1b;
+            opacity: 0.7;
+        }
+
+        .mini-audio-btn {
+            background-color: var(--box-bg);
+            border: 2px solid var(--border-light);
+            color: var(--primary);
+            width: 45px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .mini-audio-btn:hover {
+            background-color: #e0f2fe;
+            border-color: var(--primary);
+        }
+
+        .feedback-container {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background: var(--box-bg);
+            border: 1px solid var(--border-light);
+            text-align: left;
+            display: none;
+            border-left: 4px solid transparent;
+        }
+
+        .feedback-container.visible {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        .feedback-container.correct-fb {
+            border-left-color: var(--correct);
+        }
+
+        .feedback-container.wrong-fb {
+            border-left-color: var(--wrong);
+        }
+        
+        .feedback-text {
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        /* КНОПКИ НАВИГАЦИИ ВСЕГДА ВНИЗУ */
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: auto; /* Прижимает кнопки к самому низу карточки */
+            flex-shrink: 0;
+            width: 100%;
+        }
+        
+        .nav-btn {
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            flex: 1;
+            transition: all 0.2s ease;
+            display: none; 
+        }
+
+        /* Для одиночных кнопок на первом и последнем экране */
+        #start-screen .nav-btn.next,
+        #completion-screen .nav-btn.next {
+            margin-top: auto;
+            width: 100%;
+            display: block;
+        }
+
+        .nav-btn.prev {
+            background-color: var(--box-bg);
+            color: var(--text-main);
+            border: 1px solid var(--border-light);
+        }
+
+        .nav-btn.prev:hover {
+            background-color: var(--border-light);
+        }
+
+        .nav-btn.next {
+            background-color: var(--primary);
+            color: #ffffff;
+            border: none;
+        }
+
+        .nav-btn.next:hover {
+            background-color: var(--primary-hover);
+        }
+        
+        .stats-grid {
+            display: flex;
+            justify-content: space-around;
+            margin: 0.5rem 0 1.5rem 0;
+            padding: 1.2rem;
+            background: var(--box-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-light);
+        }
+        
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .stat-num {
+            font-size: 2rem;
+            font-weight: bold;
+            line-height: 1;
+            margin-bottom: 0.2rem;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-correct { color: var(--correct); }
+        .stat-wrong { color: var(--wrong); }
+        .stat-total { color: var(--primary); }
+
+        .social-cta {
+            margin-top: 1.5rem; 
+            background: var(--box-bg); 
+            padding: 1.5rem; 
+            border-radius: 12px; 
+            border: 1px solid var(--border-light);
+            text-align: center;
+        }
+
+        .social-link {
+            color: #ffffff; 
+            text-decoration: none; 
+            background: var(--primary); 
+            padding: 0.6rem 1.2rem; 
+            border-radius: 30px; 
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+            margin-bottom: 5px;
+        }
+
+        .social-link:hover {
+            background: var(--primary-hover);
+        }
+
+        .social-link.yt { background: #ef4444; }
+        .social-link.yt:hover { background: #dc2626; }
+        
+        .social-link.ig { background: #d946ef; }
+        .social-link.ig:hover { background: #c026d3; }
+        
+        .social-link.tt { background: #0f172a; }
+        .social-link.tt:hover { background: #334155; }
+        
+        .social-link.fb { background: #3b82f6; }
+        .social-link.fb:hover { background: #2563eb; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #quiz-screen, #completion-screen {
+            display: none;
+        }
+        
+        #start-screen {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Стартовый экран (Обложка) -->
+    <div class="app-container" id="start-screen">
+        <div class="header">
+            <h1>Word <span>Hack</span></h1>
+            <p>Грамматические Чит-коды</p>
+        </div>
+        
+        <div class="content-wrapper" style="gap: 1.5rem;">
+            <button class="audio-btn" id="play-intro-btn" onclick="toggleIntroAudio()">
+                <svg id="icon-intro" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <span id="text-intro">Озвучить вступление</span>
+            </button>
+            
+            <div class="scenario-box" style="text-align: center; border-left: none; border-top: 4px solid var(--primary); font-size: 1.15rem; padding: 2rem; line-height: 1.7; margin-bottom: 0;">
+                <p style="margin-bottom: 1.2rem;">Забудь про скучные таблицы времён. Этот тренажёр научит тебя выбирать грамматику не по заученным правилам, а по <strong>состояниям</strong> и <strong>намерениям</strong>.</p>
+                <p style="margin-bottom: 1.2rem;">Тебя ждут 20 жизненных ситуаций.</p>
+                <p>Слушай погружение, делай выбор и взламывай английский язык через подсознание.</p>
+            </div>
+        </div>
+        
+        <button class="nav-btn next" onclick="startTest()">Начать тест</button>
+    </div>
+
+    <!-- Основной экран тренажёра -->
+    <div class="app-container" id="quiz-screen">
+        
+        <div class="top-controls">
+            <span class="progress-text" id="progress-text">Уровень 1 / 20</span>
+            <button class="mute-btn" onclick="toggleMute()">
+                <span class="mute-icon">🔊</span> <span class="mute-text">Звук вкл</span>
+            </button>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+
+        <div class="content-wrapper">
+            <button class="audio-btn" id="play-scenario-btn" onclick="toggleScenarioAudio()">
+                <svg id="icon-scenario" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <span id="text-scenario">Озвучить задание</span>
+            </button>
+
+            <div class="scenario-box" id="scenario-text">
+                Загрузка сценария...
+            </div>
+
+            <div class="options" id="options-container"></div>
+
+            <button class="audio-btn options-audio-btn" id="play-options-btn" onclick="toggleOptionsAudio()">
+                <svg id="icon-options" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <span id="text-options">Озвучить оба варианта</span>
+            </button>
+
+            <div class="feedback-container" id="feedback-container">
+                <button class="audio-btn feedback-audio-btn" id="play-feedback-btn" onclick="toggleFeedbackAudio()">
+                    <svg id="icon-feedback" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <span id="text-feedback">Озвучить объяснение</span>
+                </button>
+                <div class="feedback-text" id="feedback-text"></div>
+            </div>
+        </div>
+        
+        <div class="nav-buttons">
+            <button class="nav-btn prev" id="prev-btn" onclick="prevQuestion()">← Назад</button>
+            <button class="nav-btn next" id="next-btn" onclick="nextQuestion()">Вперёд →</button>
+        </div>
+    </div>
+
+    <!-- Финальный экран -->
+    <div class="app-container" id="completion-screen">
+        <div class="header" style="margin-bottom: 0.5rem;">
+            <h1>Тренажёр <span>пройден!</span></h1>
+            <p>Симуляция успешно завершена.</p>
+        </div>
+        
+        <div class="top-controls" style="justify-content: flex-end; margin-bottom: 0;">
+            <button class="mute-btn" onclick="toggleMute()">
+                <span class="mute-icon">🔊</span> <span class="mute-text">Звук вкл</span>
+            </button>
+        </div>
+
+        <div class="content-wrapper" style="padding-top: 0;">
+            <button class="audio-btn" id="play-completion-btn" onclick="toggleCompletionAudio()" style="width: 100%; justify-content: center; margin-bottom: 1.5rem;">
+                <svg id="icon-completion" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                <span id="text-completion">Озвучить результаты</span>
+            </button>
+            
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-num stat-total" id="stat-total">0</span>
+                    <span class="stat-label">Всего</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-num stat-correct" id="stat-correct">0</span>
+                    <span class="stat-label">Верно</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-num stat-wrong" id="stat-wrong">0</span>
+                    <span class="stat-label">Ошибок</span>
+                </div>
+            </div>
+
+            <div class="scenario-box" style="border-left-color: var(--primary); text-align: center; margin-bottom: 0;">
+                Применяй эти чит-коды в реальных разговорах!
+            </div>
+
+            <div class="social-cta">
+                <h3 style="color: var(--primary); margin-bottom: 0.8rem; font-size: 1.15rem;">🔥 Хочешь больше ха́ков?</h3>
+                <p style="font-size: 0.95rem; color: var(--text-main); margin-bottom: 1.2rem;">
+                    Залетай ко мне в соцсети! Вся теория и секреты английского разбираются там через короткие и залипательные видео.
+                </p>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;" id="social-links-container">
+                    <a href="https://www.youtube.com/@WordHack-LS" target="_blank" class="social-link yt">YouTube</a>
+                    <a href="https://www.instagram.com/wordhack.l.s" target="_blank" class="social-link ig">Instagram</a>
+                    <a href="https://www.tiktok.com/@word_hack" target="_blank" class="social-link tt">TikTok</a>
+                    <a href="https://www.facebook.com/profile.php?id=61585497607549" target="_blank" class="social-link fb">Facebook</a>
+                </div>
+            </div>
+        </div>
+        
+        <button class="nav-btn next" onclick="restartTest()">Пройти заново</button>
+    </div>
+
+    <script>
+        const cheatCodes = [
+            {
+                scenario: "Ты стои́шь перед дверью. Ша́ришь по карманам. Ключей нет! Ситуация бьёт током прямо сейчас, прошлое напрямую влияет на настоящее.",
+                options: ["I lost my keys", "I have lost my keys"],
+                correct: 1,
+                feedback: "Состояние «Творец». Результат важен прямо сейчас: нет ключей — не могу войти."
+            },
+            {
+                scenario: "Ты рассказываешь старую историю за кофе. Ключи давно найдены, проблемы больше нет.",
+                options: ["I lost my keys", "I have lost my keys"],
+                correct: 0,
+                feedback: "Состояние «Архивариус». Действие завершено, дверь в прошлое закрыта."
+            },
+            {
+                scenario: "Ты в командировке на два месяца. Это вре́менная остановка, твой дом в другой стране.",
+                options: ["I live in London", "I am living in London"],
+                correct: 1,
+                feedback: "Состояние «Сёрфер». Процесс, который скоро завершится."
+            },
+            {
+                scenario: "Лондон — твой родной город с са́мого рождения, и ты никуда не собираешься уезжать.",
+                options: ["I live in London", "I am living in London"],
+                correct: 0,
+                feedback: "Состояние «Фундамент». Неизменный факт и константа твоей жизни."
+            },
+            {
+                scenario: "Коллега постоянно громко чавкает, и тебя это жутко бесит. Ты хочешь подчеркнуть своё недовольство.",
+                options: ["He always chews loudly", "He is always chewing loudly"],
+                correct: 1,
+                feedback: "Чит-код «Раздражение». Добавление слова — «всегда» внутрь длительного процесса превращает сухой факт в жалобу."
+            },
+            {
+                scenario: "У коллеги падает стопка бумаг. Обещание помочь ему собрать бумаги рождается прямо в эту секунду, на чистом импульсе!",
+                options: ["I will help you", "I am going to help you"],
+                correct: 0,
+                feedback: "Состояние «Искра». Спонтанный отклик и мгновенное решение."
+            },
+            {
+                scenario: "Нужная сумма накоплена, и завтра ты идёшь покупать машину по чёткому плану.",
+                options: ["I will buy a car", "I am going to buy a car"],
+                correct: 1,
+                feedback: "Состояние «Архитектор». Намерение было сформировано заранее, чертёж готов."
+            },
+            {
+                scenario: "У тебя куплены билеты, забронирован отель. Это уже не просто план в голове, это организованная реальность.",
+                options: ["I am going to fly on Friday", "I am flying on Friday"],
+                correct: 1,
+                feedback: "Чит-код «Договоренность». Форма длительного процесса здесь означает стопроцентные организованные личные планы."
+            },
+            {
+                scenario: "Ты смотришь на небо: оно чёрное, гремит гром. Очевидно, что сейчас пойдёт дождь, доказательства прямо перед тобой.",
+                options: ["It will rain", "It is going to rain"],
+                correct: 1,
+                feedback: "Чит-код «Прогноз по фактам». Предсказание на основе железных физических доказательств."
+            },
+            {
+                scenario: "Ты рассуждаешь с друзьями: «Думаю, люди будут жить на Марсе». Это чисто твоя теория.",
+                options: ["People will live on Mars", "People are going to live on Mars"],
+                correct: 0,
+                feedback: "Чит-код «Субъективный прогноз». Личное мнение без реальных доказательств в настоящем."
+            },
+            {
+                scenario: "Твой сосед принимал душ, это долгий фоновый процесс, и вдруг внезапно отключили свет.",
+                options: ["He took a shower when the lights went out", "He was taking a shower when the lights went out"],
+                correct: 1,
+                feedback: "Состояние «Фон и Вспышка». Длительный процесс в прошлом резко прерывается."
+            },
+            {
+                scenario: "Ты хочешь похвастаться, что толстая книга была прочитана тобой. Фокус только на самом факте финиша.",
+                options: ["I read the book", "I was reading the book"],
+                correct: 0,
+                feedback: "Состояние «Завершенность». Действие доведено́ до конца, важен только факт."
+            },
+            {
+                scenario: "Ты в рабочей одежде, руки в краске. Процесс покраски забора идёт уже три часа и всё ещё не завершён.",
+                options: ["I have painted the fence", "I have been painting the fence"],
+                correct: 1,
+                feedback: "Состояние «Изматывающий процесс». Фокус на действии и его побочных эффектах прямо сейчас."
+            },
+            {
+                scenario: "Работа сделана. Ты пьёшь лимонад и с гордостью смотришь на идеальный, свежепокрашенный забор.",
+                options: ["I have painted the fence", "I have been painting the fence"],
+                correct: 0,
+                feedback: "Состояние «Идеальный результат». Процесс окончен, важна выполненная задача."
+            },
+            {
+                scenario: "Ты смотришь в окно, небо серое. Остаться сегодня дома из-за дождя — это абсолютно реальная вероятность.",
+                options: ["If it rains, I will stay home", "If it rained, I would stay home"],
+                correct: 0,
+                feedback: "Чит-код «Реальное условие». Если первая часть случится — вторая гарантирована."
+            },
+            {
+                scenario: "На улице сильная жара. Появляется мечта: «Эх, если бы сейчас пошёл снег, можно было бы слепить снеговика».",
+                options: ["If it snows, I will build a snowman", "If it snowed, I would build a snowman"],
+                correct: 1,
+                feedback: "Чит-код «Фантазия». Невозможная, гипотетическая ситуация прямо сейчас. Ты просто играешь с реальностью."
+            },
+            {
+                scenario: "Ты звонишь другу в дверь. Внутри горит свет и играет музыка. Стопроцентный логический вывод — он там.",
+                options: ["He must be at home", "He can be at home"],
+                correct: 0,
+                feedback: "Чит-код «Железная логика». Используется, когда ты делаешь логический вывод и есть почти стопроцентная уверенность."
+            },
+            {
+                scenario: "Тебе говорят, что твой друг уехал, но ведь твои собственные глаза только что видели его в соседнем магазине.",
+                options: ["He mustn't be in Paris", "He can't be in Paris"],
+                correct: 1,
+                feedback: "Чит-код «Невозможность». Есть логическая уверенность, что ситуация абсолютно нереальна."
+            },
+            {
+                scenario: "В детстве у тебя была странная страсть — есть песок. Это была твоя постоянная фишка, но сейчас эта привычка в прошлом.",
+                options: ["I used to eat sand", "I was eating sand"],
+                correct: 0,
+                feedback: "Чит-код «Забытая привычка». Действие, которое было регулярным в прошлом, но сейчас отрезано."
+            },
+            {
+                scenario: "Ты сидишь на сложной лекции, и вдруг суть темы становится ясна прямо в эту секунду. Вспышка в голове.",
+                options: ["I understand", "I am understanding"],
+                correct: 0,
+                feedback: "Чит-код «Абсолютное состояние». Глаголы чувств и мыслей не могут быть длительным процессом. Это моментальный факт."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let playingType = null; 
+        let isMuted = false;
+        
+        let userAnswers = new Array(cheatCodes.length).fill(null);
+        let visitedQuestions = new Array(cheatCodes.length).fill(false);
+        
+        let currentSeqId = 0; 
+        let audioTimeout = null; 
+        
+        const synth = window.speechSynthesis || null;
+        let ruVoice = null;
+        let enVoice = null;
+
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const completionScreen = document.getElementById('completion-screen');
+        
+        const scenarioText = document.getElementById('scenario-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackText = document.getElementById('feedback-text');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressText = document.getElementById('progress-text');
+        const progressBar = document.getElementById('progress-bar');
+        
+        const playSVG = '<path d="M8 5v14l11-7z"/>';
+        const pauseSVG = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+
+        function loadVoices() {
+            if (!synth) return;
+            const voices = synth.getVoices();
+            ruVoice = voices.find(v => v.lang.includes('ru') && v.name.includes('Google')) 
+                      || voices.find(v => v.lang.includes('ru') && (v.name.includes('Irina') || v.name.includes('Milena') || v.name.includes('Antonina')))
+                      || voices.find(v => v.lang.includes('ru'));
+                      
+            enVoice = voices.find(v => v.lang.includes('en') && v.name.includes('Google')) 
+                      || voices.find(v => v.lang.includes('en') && (v.name.includes('Samantha') || v.name.includes('Victoria'))) 
+                      || voices.find(v => v.lang.includes('en'));
+        }
+
+        if (window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+        }
+
+        function startTest() {
+            stopAllAudio(); 
+            startScreen.style.display = 'none';
+            quizScreen.style.display = 'flex'; 
+            
+            if (synth) {
+                synth.speak(new SpeechSynthesisUtterance(''));
+            }
+            
+            visitedQuestions[0] = true;
+            loadQuestion();
+            
+            if (!isMuted) {
+                toggleScenarioAudio();
+            }
+        }
+
+        function toggleMute() {
+            isMuted = !isMuted;
+            const muteBtns = document.querySelectorAll('.mute-btn');
+            const muteIcons = document.querySelectorAll('.mute-icon');
+            const muteTexts = document.querySelectorAll('.mute-text');
+            
+            if (isMuted) {
+                stopAllAudio();
+                muteBtns.forEach(btn => btn.classList.add('muted'));
+                muteIcons.forEach(icon => icon.innerText = '🔇');
+                muteTexts.forEach(text => text.innerText = 'Без звука');
+            } else {
+                muteBtns.forEach(btn => btn.classList.remove('muted'));
+                muteIcons.forEach(icon => icon.innerText = '🔊');
+                muteTexts.forEach(text => text.innerText = 'Звук вкл');
+            }
+        }
+
+        function forceUnmute() {
+            if (isMuted) toggleMute();
+        }
+
+        function loadQuestion() {
+            const q = cheatCodes[currentQuestion];
+            
+            progressText.innerText = `Уровень ${currentQuestion + 1} / ${cheatCodes.length}`;
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            progressBar.style.width = `${(answeredCount / cheatCodes.length) * 100}%`;
+            
+            scenarioText.innerText = q.scenario;
+            
+            stopAllAudio();
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((option, index) => {
+                const row = document.createElement('div');
+                row.className = 'option-row';
+
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = option;
+                btn.onclick = () => checkAnswer(index, btn);
+
+                const audioBtn = document.createElement('button');
+                audioBtn.className = 'mini-audio-btn';
+                audioBtn.innerHTML = '🔊';
+                audioBtn.title = "Озвучить эту фразу";
+                audioBtn.onclick = (e) => {
+                    e.stopPropagation(); 
+                    forceUnmute();
+                    playSingleText(option, 'en-US');
+                };
+
+                row.appendChild(btn);
+                row.appendChild(audioBtn);
+                optionsContainer.appendChild(row);
+            });
+
+            prevBtn.style.display = (currentQuestion > 0) ? 'block' : 'none';
+
+            if (userAnswers[currentQuestion] !== null) {
+                const savedAnswerIndex = userAnswers[currentQuestion];
+                const allBtns = document.querySelectorAll('.option-btn');
+                
+                allBtns.forEach(btn => btn.disabled = true);
+
+                const isCorrect = (savedAnswerIndex === q.correct);
+
+                if (isCorrect) {
+                    allBtns[savedAnswerIndex].classList.add('correct');
+                    feedbackContainer.classList.remove('wrong-fb');
+                    feedbackContainer.classList.add('correct-fb');
+                } else {
+                    allBtns[savedAnswerIndex].classList.add('wrong');
+                    allBtns[q.correct].classList.add('correct');
+                    feedbackContainer.classList.remove('correct-fb');
+                    feedbackContainer.classList.add('wrong-fb');
+                }
+
+                feedbackText.innerText = q.feedback;
+                feedbackContainer.classList.add('visible');
+                
+                nextBtn.style.display = 'block';
+                if (currentQuestion === cheatCodes.length - 1) {
+                    nextBtn.innerText = "Узнать результат";
+                } else {
+                    nextBtn.innerText = "Вперёд →";
+                }
+            } else {
+                feedbackContainer.classList.remove('visible', 'correct-fb', 'wrong-fb');
+                nextBtn.style.display = 'none';
+            }
+        }
+
+        function playSingleText(text, lang) {
+            stopAllAudio(); 
+            if (!synth) return;
+            
+            audioTimeout = setTimeout(() => {
+                if (!ruVoice || !enVoice) loadVoices();
+                let utterance = new SpeechSynthesisUtterance(text);
+                window.currentUtterance = utterance; 
+                
+                if (lang === 'ru-RU') {
+                    if (ruVoice) utterance.voice = ruVoice;
+                    utterance.rate = 1.15;
+                } else {
+                    if (enVoice) utterance.voice = enVoice;
+                    utterance.rate = 1.0;
+                }
+                synth.speak(utterance);
+            }, 100);
+        }
+
+        function toggleIntroAudio() {
+            if (playingType === 'intro') {
+                stopAllAudio();
+            } else {
+                forceUnmute(); 
+                stopAllAudio();
+                playingType = 'intro';
+                updateIcons();
+
+                const introText = "Забудь про скучные таблицы времён. Этот тренажёр научит тебя выбирать грамматику не по заученным правилам, а по состояниям и намерениям. Тебя ждут 20 жизненных ситуаций. Слушай погружение, делай выбор и взламывай английский язык через подсознание.";
+                const sequence = [{ text: introText, lang: 'ru-RU' }];
+                playSequence(sequence);
+            }
+        }
+
+        function toggleScenarioAudio() {
+            if (playingType === 'scenario') {
+                stopAllAudio();
+            } else {
+                forceUnmute(); 
+                stopAllAudio();
+                playingType = 'scenario';
+                updateIcons();
+
+                const q = cheatCodes[currentQuestion];
+                const sequence = [
+                    { text: q.scenario, lang: 'ru-RU' },
+                    { pause: 300 }, 
+                    { text: q.options[0], lang: 'en-US' },
+                    { pause: 300 }, 
+                    { text: q.options[1], lang: 'en-US' }
+                ];
+                playSequence(sequence);
+            }
+        }
+
+        function toggleOptionsAudio() {
+            if (playingType === 'options') {
+                stopAllAudio();
+            } else {
+                forceUnmute(); 
+                stopAllAudio();
+                playingType = 'options';
+                updateIcons();
+
+                const q = cheatCodes[currentQuestion];
+                const sequence = [
+                    { text: q.options[0], lang: 'en-US' },
+                    { pause: 300 }, 
+                    { text: q.options[1], lang: 'en-US' }
+                ];
+                playSequence(sequence);
+            }
+        }
+
+        function toggleFeedbackAudio() {
+            if (playingType === 'feedback') {
+                stopAllAudio();
+            } else {
+                forceUnmute(); 
+                stopAllAudio();
+                playingType = 'feedback';
+                updateIcons();
+
+                const q = cheatCodes[currentQuestion];
+                const sequence = [
+                    { text: q.feedback, lang: 'ru-RU' }
+                ];
+                playSequence(sequence);
+            }
+        }
+        
+        function toggleCompletionAudio() {
+            if (playingType === 'completion') {
+                stopAllAudio();
+            } else {
+                forceUnmute(); 
+                stopAllAudio();
+                playingType = 'completion';
+                updateIcons();
+
+                const completionText = "Тренажёр пройден! Симуляция успешно завершена. Применяй эти чит-коды в реальных разговорах! Хочешь больше ха́ков? Залетай ко мне в соцсети! Вся теория и секреты английского разбираются там через короткие и залипательные видео.";
+                const sequence = [{ text: completionText, lang: 'ru-RU' }];
+                playSequence(sequence);
+            }
+        }
+
+        function playSequence(seq) {
+            if (!synth) return;
+            currentSeqId++; 
+            const activeSeqId = currentSeqId;
+            synth.cancel(); 
+            
+            if (audioTimeout) clearTimeout(audioTimeout);
+            
+            audioTimeout = setTimeout(() => {
+                let i = 0;
+                if (!ruVoice || !enVoice) loadVoices();
+                
+                function speakNext() {
+                    if (activeSeqId !== currentSeqId || playingType === null) return;
+                    
+                    if (i >= seq.length) {
+                        stopAllAudio();
+                        return;
+                    }
+                    
+                    if (seq[i].pause) {
+                        audioTimeout = setTimeout(() => {
+                            if (activeSeqId === currentSeqId) {
+                                i++;
+                                speakNext();
+                            }
+                        }, seq[i].pause);
+                        return;
+                    }
+                    
+                    let utterance = new SpeechSynthesisUtterance(seq[i].text);
+                    window.currentUtterance = utterance;
+                    
+                    if (seq[i].lang === 'ru-RU') {
+                        if (ruVoice) utterance.voice = ruVoice;
+                        utterance.rate = 1.15; 
+                    } else if (seq[i].lang === 'en-US') {
+                        if (enVoice) utterance.voice = enVoice;
+                        utterance.rate = 1.0; 
+                    }
+                    
+                    utterance.onend = () => {
+                        if (activeSeqId === currentSeqId) {
+                            i++;
+                            speakNext();
+                        }
+                    };
+                    
+                    utterance.onerror = (e) => {
+                        if (activeSeqId === currentSeqId && e.error !== 'canceled') {
+                            stopAllAudio();
+                        }
+                    };
+                    
+                    synth.speak(utterance);
+                }
+                speakNext();
+            }, 100); 
+        }
+
+        function stopAllAudio() {
+            currentSeqId++; 
+            if (audioTimeout) clearTimeout(audioTimeout);
+            if (synth) synth.cancel();
+            playingType = null;
+            updateIcons();
+        }
+
+        function updateIcons() {
+            const btnIntroIcon = document.getElementById('icon-intro');
+            const btnIntroText = document.getElementById('text-intro');
+            const btnScenarioIcon = document.getElementById('icon-scenario');
+            const btnScenarioText = document.getElementById('text-scenario');
+            const btnOptionsIcon = document.getElementById('icon-options');
+            const btnOptionsText = document.getElementById('text-options');
+            const btnFeedbackIcon = document.getElementById('icon-feedback');
+            const btnFeedbackText = document.getElementById('text-feedback');
+            const btnCompletionIcon = document.getElementById('icon-completion');
+            const btnCompletionText = document.getElementById('text-completion');
+            
+            if (btnIntroIcon && btnIntroText) {
+                if (playingType === 'intro') {
+                    btnIntroIcon.innerHTML = pauseSVG;
+                    btnIntroText.innerText = 'Остановить';
+                } else {
+                    btnIntroIcon.innerHTML = playSVG;
+                    btnIntroText.innerText = 'Озвучить вступление';
+                }
+            }
+
+            if (btnScenarioIcon && btnScenarioText) {
+                if (playingType === 'scenario') {
+                    btnScenarioIcon.innerHTML = pauseSVG;
+                    btnScenarioText.innerText = 'Остановить';
+                } else {
+                    btnScenarioIcon.innerHTML = playSVG;
+                    btnScenarioText.innerText = 'Озвучить задание';
+                }
+            }
+
+            if (btnOptionsIcon && btnOptionsText) {
+                if (playingType === 'options') {
+                    btnOptionsIcon.innerHTML = pauseSVG;
+                    btnOptionsText.innerText = 'Остановить';
+                } else {
+                    btnOptionsIcon.innerHTML = playSVG;
+                    btnOptionsText.innerText = 'Озвучить оба варианта';
+                }
+            }
+            
+            if (btnFeedbackIcon && btnFeedbackText) {
+                if (playingType === 'feedback') {
+                    btnFeedbackIcon.innerHTML = pauseSVG;
+                    btnFeedbackText.innerText = 'Остановить';
+                } else {
+                    btnFeedbackIcon.innerHTML = playSVG;
+                    btnFeedbackText.innerText = 'Озвучить объяснение';
+                }
+            }
+            
+            if (btnCompletionIcon && btnCompletionText) {
+                if (playingType === 'completion') {
+                    btnCompletionIcon.innerHTML = pauseSVG;
+                    btnCompletionText.innerText = 'Остановить';
+                } else {
+                    btnCompletionIcon.innerHTML = playSVG;
+                    btnCompletionText.innerText = 'Озвучить результаты';
+                }
+            }
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            if (userAnswers[currentQuestion] !== null) return;
+            
+            const q = cheatCodes[currentQuestion];
+            const allBtns = document.querySelectorAll('.option-btn');
+            
+            userAnswers[currentQuestion] = selectedIndex;
+            allBtns.forEach(btn => btn.disabled = true);
+
+            const isCorrect = (selectedIndex === q.correct);
+
+            if (isCorrect) {
+                btnElement.classList.add('correct');
+                feedbackContainer.classList.add('correct-fb');
+            } else {
+                btnElement.classList.add('wrong');
+                allBtns[q.correct].classList.add('correct');
+                feedbackContainer.classList.add('wrong-fb');
+            }
+
+            feedbackText.innerText = q.feedback;
+            feedbackContainer.classList.add('visible');
+            
+            nextBtn.style.display = 'block';
+            if (currentQuestion === cheatCodes.length - 1) {
+                nextBtn.innerText = "Узнать результат";
+            } else {
+                nextBtn.innerText = "Вперёд →";
+            }
+            
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            progressBar.style.width = `${(answeredCount / cheatCodes.length) * 100}%`;
+            
+            stopAllAudio();
+            
+            if (!isMuted) {
+                playingType = 'feedback';
+                updateIcons();
+                
+                const resultText = isCorrect ? "Верно." : "Ошибка.";
+                const combinedText = resultText + " " + q.feedback;
+                
+                const autoSequence = [
+                    { text: combinedText, lang: 'ru-RU' }
+                ];
+                playSequence(autoSequence);
+            }
+        }
+
+        function prevQuestion() {
+            stopAllAudio();
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            stopAllAudio();
+            if (currentQuestion < cheatCodes.length - 1) {
+                currentQuestion++;
+                
+                let isFirstVisit = !visitedQuestions[currentQuestion];
+                visitedQuestions[currentQuestion] = true;
+                
+                loadQuestion();
+                
+                if (isFirstVisit && !isMuted) {
+                    toggleScenarioAudio();
+                }
+                
+            } else {
+                showCompletionScreen();
+            }
+        }
+
+        function showCompletionScreen() {
+            stopAllAudio(); 
+            quizScreen.style.display = 'none';
+            completionScreen.style.display = 'flex'; 
+            
+            let totalAnswered = 0;
+            let correctCount = 0;
+            
+            for(let i = 0; i < cheatCodes.length; i++) {
+                if (userAnswers[i] !== null) {
+                    totalAnswered++;
+                    if (userAnswers[i] === cheatCodes[i].correct) {
+                        correctCount++;
+                    }
+                }
+            }
+            
+            let wrongCount = totalAnswered - correctCount;
+            
+            document.getElementById('stat-total').innerText = totalAnswered;
+            document.getElementById('stat-correct').innerText = correctCount;
+            document.getElementById('stat-wrong').innerText = wrongCount;
+            
+            if (!isMuted) {
+                playingType = 'completion';
+                updateIcons();
+                
+                const completionText = "Тренажёр пройден! Симуляция успешно завершена. Применяй эти чит-коды в реальных разговорах! Хочешь больше ха́ков? Залетай ко мне в соцсети! Вся теория и секреты английского разбираются там через короткие и залипательные видео.";
+                const autoSequence = [
+                    { text: completionText, lang: 'ru-RU' }
+                ];
+                playSequence(autoSequence);
+            }
+        }
+
+        function restartTest() {
+            stopAllAudio();
+            completionScreen.style.display = 'none';
+            quizScreen.style.display = 'flex'; 
+            
+            currentQuestion = 0;
+            userAnswers = new Array(cheatCodes.length).fill(null);
+            visitedQuestions = new Array(cheatCodes.length).fill(false);
+            visitedQuestions[0] = true;
+            
+            loadQuestion();
+            
+            if (!isMuted) {
+                toggleScenarioAudio();
+            }
+        }
+    </script>
+</body>
+</html>
