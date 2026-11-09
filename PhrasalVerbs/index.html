@@ -1,0 +1,1904 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phrasal Verbs Hack — Тренажер фразовых глаголов</title>
+  <style>
+    :root {
+      --bg-dark: #0b1120;
+      --surface-light: #ffffff;
+      --surface-soft: #f1f5f9;
+      --surface-accent: #e0f2fe;
+      --surface-warn: #fffbeb;
+      --text-main: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+      --accent: #0ea5e9;
+      --accent-hover: #0284c7;
+      --accent-border: #7dd3fc;
+      --success: #059669;
+      --success-bg: #d1fae5;
+      --danger: #dc2626;
+      --danger-bg: #fee2e2;
+      --warning: #d97706;
+      --border-light: #e2e8f0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding-bottom: 90px;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 16px 16px 16px;
+    }
+
+    /* Плавающая боковая панель справа: НАВЕРХ и ОСТАНОВИТЬ ЗВУК (всегда под рукой) */
+    .floating-side-controls {
+      position: fixed;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .floating-up-btn,
+    .floating-stop-btn {
+      color: #ffffff;
+      border: 3px solid #ffffff;
+      padding: 12px 10px;
+      border-radius: 16px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      transition: transform 0.2s, background 0.2s;
+      min-width: 64px;
+    }
+
+    .floating-up-btn {
+      background: var(--accent-hover);
+      box-shadow: 0 8px 25px rgba(2, 132, 199, 0.55);
+    }
+
+    .floating-up-btn:hover {
+      background: #0369a1;
+      transform: scale(1.05);
+    }
+
+    .floating-up-btn:active {
+      transform: scale(0.96);
+    }
+
+    .floating-stop-btn {
+      background: var(--danger);
+      box-shadow: 0 8px 25px rgba(220, 38, 38, 0.55);
+    }
+
+    .floating-stop-btn:hover {
+      background: #b91c1c;
+      transform: scale(1.05);
+    }
+
+    .floating-stop-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* ==========================================
+       ЗАМОРОЖЕННАЯ ВЕРХНЯЯ ПАНЕЛЬ (КАК В EXCEL):
+       Заголовок + Скорость + Прогресс + Шаг 1 / Шаг 2 + Список глаголов
+       ========================================== */
+    .frozen-top-panel {
+      position: sticky;
+      top: 0;
+      z-index: 1100;
+      background: rgba(11, 17, 32, 0.96);
+      backdrop-filter: blur(8px);
+      padding-top: 10px;
+      padding-bottom: 10px;
+      margin-bottom: 14px;
+      border-bottom: 2px solid rgba(125, 211, 252, 0.25);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Шапка внутри замороженного блока */
+    header {
+      background: var(--surface-light);
+      border-radius: 16px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: 1.25rem;
+      font-weight: 900;
+      color: var(--accent-hover);
+    }
+
+    .speed-controls {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      background: var(--surface-soft);
+      padding: 4px 8px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      font-weight: 700;
+    }
+
+    .btn-small {
+      background: var(--surface-light);
+      color: var(--text-main);
+      border: 1px solid var(--border-light);
+      padding: 4px 9px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 800;
+      transition: 0.2s;
+    }
+
+    .btn-small:hover {
+      background: var(--surface-accent);
+    }
+
+    .btn-small.active {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent);
+    }
+
+    .progress-wrap {
+      width: 100%;
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .progress-bar {
+      height: 10px;
+      background: var(--surface-soft);
+      border-radius: 99px;
+      overflow: hidden;
+      border: 1px solid var(--border-light);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #10b981);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* Переключатель режимов (Шаг 1 / Шаг 2) внутри замороженного блока */
+    .mode-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .mode-btn {
+      background: var(--surface-light);
+      color: var(--text-secondary);
+      border: 2px solid transparent;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .mode-btn.active {
+      background: var(--accent);
+      color: #ffffff;
+      border-color: var(--accent-border);
+    }
+
+    /* Строка выбора глаголов внутри замороженного блока */
+    .verb-selector-wrap {
+      position: relative;
+      margin-bottom: 0;
+    }
+
+    .verb-dropdown-trigger {
+      width: 100%;
+      background: var(--surface-light);
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+      transition: 0.2s;
+    }
+
+    .verb-dropdown-trigger:hover {
+      background: var(--surface-accent);
+    }
+
+    .trigger-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-align: left;
+    }
+
+    .trigger-label {
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: block;
+    }
+
+    .trigger-current {
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: var(--text-main);
+    }
+
+    .trigger-btn-text {
+      background: var(--accent);
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 9px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .verb-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      left: 0;
+      right: 0;
+      background: var(--surface-light);
+      border: 2px solid var(--accent-border);
+      border-radius: 16px;
+      padding: 10px;
+      z-index: 1200;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.55);
+      max-height: 340px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .dropdown-item {
+      width: 100%;
+      background: var(--surface-soft);
+      border: 2px solid transparent;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text-main);
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: 0.15s;
+    }
+
+    .dropdown-item:hover {
+      background: var(--surface-accent);
+    }
+
+    .dropdown-item.active {
+      background: var(--surface-accent);
+      border-color: var(--accent);
+      color: var(--accent-hover);
+    }
+
+    .dropdown-count {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      background: #ffffff;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-weight: 700;
+    }
+
+    /* Главная карточка базового глагола */
+    .base-hero {
+      background: var(--surface-light);
+      border: 3px solid var(--accent-border);
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+    }
+
+    .hero-badge {
+      display: inline-block;
+      background: var(--surface-accent);
+      color: var(--accent-hover);
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 99px;
+      margin-bottom: 8px;
+    }
+
+    .base-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .base-title {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--text-main);
+    }
+
+    .base-sub {
+      color: var(--accent-hover);
+      font-weight: 800;
+      margin-left: 8px;
+      font-size: 1.15rem;
+    }
+
+    .base-mnemonic {
+      background: var(--surface-warn);
+      border-left: 5px solid var(--warning);
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-size: 1rem;
+      color: var(--text-main);
+    }
+
+    /* Карточка фразового глагола */
+    .pv-card {
+      background: var(--surface-light);
+      border: 3px solid transparent;
+      border-radius: 18px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+      transition: transform 0.15s ease, border-color 0.2s;
+    }
+
+    .pv-card.learned {
+      border-color: var(--success);
+    }
+
+    .pv-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .pv-name {
+      font-size: 1.55rem;
+      font-weight: 900;
+      color: var(--text-main);
+    }
+
+    /* Две понятные кнопки: Не помню / Помню */
+    .memory-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .memory-switch {
+      display: inline-flex;
+      background: var(--surface-soft);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--border-light);
+      gap: 4px;
+    }
+
+    .mem-btn {
+      border: none;
+      background: transparent;
+      padding: 7px 12px;
+      border-radius: 9px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: 0.2s;
+    }
+
+    .mem-btn.not-learned-active {
+      background: #ffffff;
+      color: var(--danger);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .mem-btn.learned-active {
+      background: var(--success);
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(5, 150, 105, 0.3);
+    }
+
+    /* Пошаговые блоки внутри карточки */
+    .step-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+
+    .step-box.warn-box {
+      background: var(--surface-warn);
+      border-color: #fde68a;
+    }
+
+    .step-box.example-step {
+      background: #f8fafc;
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .step-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--text-muted);
+    }
+
+    .step-label.accent {
+      color: var(--accent-hover);
+    }
+
+    .step-label.warn {
+      color: var(--warning);
+    }
+
+    .pv-meaning {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--accent-hover);
+    }
+
+    .pv-prep-text {
+      font-size: 0.98rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .ex-en {
+      font-size: 1.08rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+
+    .ex-ru {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    /* Кнопки озвучки */
+    .btn-mini-audio {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--surface-accent);
+      color: var(--accent-hover);
+      border: 1px solid var(--accent-border);
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.2s;
+      flex-shrink: 0;
+    }
+
+    .btn-mini-audio:hover {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .btn-audio {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: var(--accent);
+      color: #ffffff;
+      border: none;
+      padding: 11px 16px;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-audio:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+
+    .btn-audio:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-audio.secondary {
+      background: var(--surface-accent);
+      color: var(--accent-hover);
+      border: 2px solid var(--accent-border);
+    }
+
+    .btn-audio.secondary:hover:not(:disabled) {
+      background: #bae6fd;
+    }
+
+    .btn-audio.nav-btn {
+      background: var(--surface-soft);
+      color: var(--text-main);
+      border: 2px solid #cbd5e1;
+    }
+
+    .btn-audio.nav-btn:hover:not(:disabled) {
+      background: #e2e8f0;
+    }
+
+    /* Активная кнопка во время озвучки (повторный клик останавливает) */
+    .playing-now {
+      background: var(--warning) !important;
+      color: #ffffff !important;
+      border-color: var(--warning) !important;
+    }
+
+    /* Тренажер (Экзамен) */
+    .quiz-card {
+      background: var(--surface-light);
+      border-radius: 18px;
+      padding: 24px;
+      text-align: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+    }
+
+    .quiz-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .quiz-prompt {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text-secondary);
+    }
+
+    .quiz-score {
+      display: flex;
+      gap: 10px;
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+
+    .score-badge {
+      padding: 6px 12px;
+      border-radius: 99px;
+    }
+
+    .score-ok {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .score-err {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+
+    .quiz-sentence {
+      font-size: 1.45rem;
+      font-weight: 900;
+      margin-bottom: 10px;
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    /* Подчеркнутая полосочка и выделение вставленного ответа прямо внутри предложения */
+    .filled-blank {
+      display: inline-block;
+      padding: 1px 10px;
+      margin: 0 3px;
+      border-bottom: 4px solid var(--accent-hover);
+      border-radius: 8px 8px 0 0;
+      font-weight: 900;
+    }
+
+    .filled-blank.ok {
+      background: var(--success-bg);
+      color: var(--success);
+      border-bottom-color: var(--success);
+    }
+
+    .filled-blank.err-picked {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border-bottom-color: var(--danger);
+      text-decoration: line-through;
+      margin-right: 6px;
+      font-size: 0.9em;
+    }
+
+    .quiz-translation {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--accent-hover);
+      margin-bottom: 16px;
+    }
+
+    .quiz-hint {
+      background: var(--surface-warn);
+      border: 1px solid #fde68a;
+      color: var(--text-main);
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    /* Варианты ответов с отдельной озвучкой каждого */
+    .quiz-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .quiz-opt-wrap {
+      display: flex;
+      align-items: stretch;
+      background: var(--surface-soft);
+      border: 2px solid var(--border-light);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: 0.2s;
+    }
+
+    .quiz-opt-wrap:hover {
+      border-color: var(--accent);
+    }
+
+    .quiz-opt {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      padding: 14px 12px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .user-choice-tag {
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 99px;
+      background: rgba(15, 23, 42, 0.12);
+      color: inherit;
+      white-space: nowrap;
+    }
+
+    .quiz-opt-speaker {
+      background: var(--surface-accent);
+      color: var(--accent-hover);
+      border: none;
+      border-left: 1px solid var(--border-light);
+      padding: 0 14px;
+      font-size: 1rem;
+      cursor: pointer;
+      font-weight: 800;
+      transition: 0.2s;
+    }
+
+    .quiz-opt-speaker:hover {
+      background: var(--accent);
+      color: #ffffff;
+    }
+
+    .quiz-opt-wrap.correct {
+      background: var(--success-bg);
+      border-color: var(--success);
+    }
+
+    .quiz-opt-wrap.correct .quiz-opt {
+      color: var(--success);
+    }
+
+    .quiz-opt-wrap.wrong {
+      background: var(--danger-bg);
+      border-color: var(--danger);
+    }
+
+    .quiz-opt-wrap.wrong .quiz-opt {
+      color: var(--danger);
+    }
+
+    .quiz-audio-actions {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .quiz-nav-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ПЛАВАЮЩИЕ КНОПКИ СБОКУ ЭКРАНА: НАВЕРХ + СТОП ЗВУК -->
+<div class="floating-side-controls">
+  <button class="floating-up-btn" onclick="scrollToTop()" title="Вернуться к началу страницы">
+    <span>⬆</span>
+    <span>Наверх</span>
+  </button>
+  <button class="floating-stop-btn" onclick="stopAudio()" title="Остановить звук">
+    <span>⏹</span>
+    <span>Стоп</span>
+  </button>
+</div>
+
+<div class="container">
+
+  <!-- ЗАМОРОЖЕННАЯ ВЕРХНЯЯ ПАНЕЛЬ (ЗАГОЛОВОК + СКОРОСТЬ + ШАГ 1 / ШАГ 2 + ВЫБОР ГЛАГОЛОВ) -->
+  <div class="frozen-top-panel" id="frozen-top-panel">
+    <header>
+      <div class="header-top">
+        <h1>⚡ Phrasal Verbs Hack</h1>
+        <div class="speed-controls">
+          <span>Скорость:</span>
+          <button class="btn-small" id="speed-slow" onclick="setSpeed(0.8)">0.8x</button>
+          <button class="btn-small active" id="speed-norm" onclick="setSpeed(1.0)">1.0x</button>
+          <button class="btn-small" id="speed-fast" onclick="setSpeed(1.3)">1.3x</button>
+        </div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-labels">
+          <span>Твой прогресс (отмечено «Помню»):</span>
+          <span id="progress-text">0 из 14 (0%)</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="mode-tabs">
+      <button class="mode-btn active" id="tab-learn" onclick="switchMode('learn')">🧠 Шаг 1: Ассоциации и База</button>
+      <button class="mode-btn" id="tab-quiz" onclick="switchMode('quiz')">🎯 Шаг 2: Тренажер (Экзамен)</button>
+    </div>
+
+    <!-- ВЫБОР ГЛАГОЛОВ (ИЛИ ВСЕ ГЛАГОЛЫ СРАЗУ) — ВНУТРИ ЗАМОРОЖЕННОЙ ПАНЕЛИ -->
+    <div class="verb-selector-wrap" id="verb-selector-wrap">
+      <button class="verb-dropdown-trigger" onclick="toggleVerbDropdown()">
+        <div class="trigger-left">
+          <div>
+            <span class="trigger-label">📌 Выбранный глагол (по алфавиту A–Z):</span>
+            <div class="trigger-current" id="dropdown-current-title">🔔 CALL — Звонить / Звать</div>
+          </div>
+        </div>
+        <span class="trigger-btn-text" id="dropdown-arrow">Выбрать глагол ▼</span>
+      </button>
+
+      <div class="verb-dropdown-menu hidden" id="verb-dropdown-menu"></div>
+    </div>
+  </div>
+
+  <!-- РЕЖИМ ОБУЧЕНИЯ -->
+  <div id="learn-section">
+    <div id="cards-container"></div>
+  </div>
+
+  <!-- РЕЖИМ ТРЕНАЖЕРА -->
+  <div id="quiz-section" class="hidden">
+    <div class="quiz-card">
+      <div class="quiz-topbar">
+        <div class="quiz-prompt" id="q-counter">Вопрос 1</div>
+        <div class="quiz-score">
+          <span class="score-badge score-ok">✅ Правильно: <span id="score-correct">0</span></span>
+          <span class="score-badge score-err">❌ Неправильно: <span id="score-wrong">0</span></span>
+        </div>
+      </div>
+      <div class="quiz-sentence" id="q-sentence"></div>
+      <div class="quiz-translation" id="q-translation"></div>
+      <div class="quiz-hint" id="q-hint"></div>
+      <div class="quiz-options" id="q-options"></div>
+
+      <!-- Кнопки озвучки в экзамене -->
+      <div class="quiz-audio-actions">
+        <button class="btn-audio secondary" id="btn-quiz-question" onclick="playQuizOnlyQuestion(this)">🔊 Озвучить вопрос</button>
+        <button class="btn-audio secondary" id="btn-quiz-opts" onclick="playQuizOnlyOptions(this)">🔊 Озвучить только ответы</button>
+        <button class="btn-audio secondary" id="btn-quiz-all" onclick="playQuizEverything(this)">🎧 Озвучить всё</button>
+      </div>
+
+      <!-- Навигация Назад / Дальше -->
+      <div class="quiz-nav-actions">
+        <button class="btn-audio nav-btn" id="q-prev" onclick="prevQuestion()">⬅ Назад</button>
+        <button class="btn-audio" id="q-next" onclick="nextQuestion()">Дальше ➔</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Функция плавного возврата к началу страницы
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // ==========================================
+  // БАЗА ДАННЫХ ФРАЗОВЫХ ГЛАГОЛОВ (АВТОМАТИЧЕСКИ СОРТИРУЕТСЯ ПО АЛФАВИТУ)
+  // ==========================================
+  const VERB_DB = [
+    {
+      base: "CALL",
+      meaning: "Звонить / Звать",
+      icon: "🔔",
+      baseMnemonic: "Звучит как КОЛокол. Представь огромный медный КОЛокол, в который звонят, чтобы всех созвать.",
+      items: [
+        {
+          id: "call_back",
+          pv: "Call back",
+          prep: "back",
+          prepLogic: "BACK = назад / в ответ",
+          prepLogicRu: "назад, в ответ",
+          meaning: "Перезвонить",
+          mnemonic: "Тебе позвонили в колокол, а ты бьёшь в свой колокол НАЗАД (back) в ответ.",
+          en: "I will call you back in five minutes.",
+          ru: "Я перезвоню тебе через пять минут.",
+          quizEn: "She promised to call me back tonight.",
+          quizRu: "Она обещала перезвонить мне сегодня вечером."
+        },
+        {
+          id: "call_for",
+          pv: "Call for",
+          prep: "for",
+          prepLogic: "FOR = для (цель, повод)",
+          prepLogicRu: "для, цель или повод",
+          meaning: "Требовать чего-то / Заслуживать",
+          mnemonic: "В колокол бьют специально ДЛЯ (for) важного повода — сама ситуация торжественно требует этого звона!",
+          en: "This calls for a celebration!",
+          ru: "Ситуация требует праздника! (Это нужно отметить!)",
+          quizEn: "Your promotion calls for a toast!",
+          quizRu: "Твоё повышение требует тоста!"
+        },
+        {
+          id: "call_off",
+          pv: "Call off",
+          prep: "off",
+          prepLogic: "OFF = отрыв / отключение",
+          prepLogicRu: "отрыв, отключение",
+          meaning: "Отменять (встречу, мероприятие)",
+          mnemonic: "Представь, что язык у колокола оторвался (off) и улетел прочь. Звона не будет — мероприятие отменяется!",
+          en: "They called off the meeting.",
+          ru: "Они отменили встречу.",
+          quizEn: "We had to call off the concert because of the rain.",
+          quizRu: "Нам пришлось отменить концерт из-за дождя."
+        },
+        {
+          id: "call_on",
+          pv: "Call on",
+          prep: "on",
+          prepLogic: "ON = на (направленность на человека)",
+          prepLogicRu: "на, направленность на человека",
+          meaning: "Вызывать (отвечать) / Заходить в гости",
+          mnemonic: "Ты направляешь гул колокола прямо НА (on) конкретного ученика в классе, вызывая его к доске.",
+          en: "The teacher called on me first.",
+          ru: "Учитель вызвал меня первым.",
+          quizEn: "The professor called on Sarah to answer the question.",
+          quizRu: "Профессор вызвал Сару ответить на вопрос."
+        }
+      ]
+    },
+    {
+      base: "GIVE",
+      meaning: "Давать",
+      icon: "🐶",
+      baseMnemonic: "Похоже по звучанию на собачье ГАВ-ГАВ! (ГИВ — ГАВ). Представь радостного пса, который громко лает ГАВ-ГАВ!, когда хозяин ДАЁТ ему вкусную вкусняшку.",
+      items: [
+        {
+          id: "give_away",
+          pv: "Give away",
+          prep: "away",
+          prepLogic: "AWAY = прочь / в сторону",
+          prepLogicRu: "прочь, в сторону",
+          meaning: "Отдавать даром / Выбалтывать секрет",
+          mnemonic: "Хозяин сам приготовил для собаки слишком много вкусняшек, поэтому бесплатно раздаёт лишние коробки ПРОЧЬ (away) соседям во дворе, да ещё и случайно выболтал им секретный рецепт лакомства!",
+          en: "Don't give away the secret!",
+          ru: "Не выболтай секрет!",
+          quizEn: "He gave away all his old clothes for free.",
+          quizRu: "Он бесплатно раздал всю свою старую одежду."
+        },
+        {
+          id: "give_back",
+          pv: "Give back",
+          prep: "back",
+          prepLogic: "BACK = назад",
+          prepLogicRu: "назад",
+          meaning: "Возвращать владельцу",
+          mnemonic: "Собака стащила на прогулке чужой мячик и лает ГАВ!, а хозяин забирает его и возвращает НАЗАД (back) владельцу.",
+          en: "Give it back to me right now.",
+          ru: "Верни мне это прямо сейчас.",
+          quizEn: "Don't forget to give back the keys tomorrow.",
+          quizRu: "Не забудь вернуть ключи завтра."
+        },
+        {
+          id: "give_in",
+          pv: "Give in",
+          prep: "in",
+          prepLogic: "IN = внутрь (прогиб под давлением)",
+          prepLogicRu: "внутрь, прогиб под давлением",
+          meaning: "Уступать в споре / Соглашаться после уговоров",
+          mnemonic: "Собака сидит у стола и настойчиво лает ГАВ-ГАВ!, выпрашивая вкусняшку. Хозяин не выдерживает ВНУТРИ (in) себя, уступает её уговорам и даёт кусочек: Ладно, уговорила!",
+          en: "Okay, I give in, let's go.",
+          ru: "Ладно, я уступаю, пошли.",
+          quizEn: "After a long argument, she finally gave in.",
+          quizRu: "После долгого спора она наконец уступила."
+        },
+        {
+          id: "give_out",
+          pv: "Give out",
+          prep: "out",
+          prepLogic: "OUT = наружу / исчерпание до дна",
+          prepLogicRu: "наружу, исчерпание до дна",
+          meaning: "Раздавать людям / Садиться (о батарейке, силах)",
+          mnemonic: "Хозяин достаёт вкусняшки из огромного тяжёлого мешка НАРУЖУ (out) и раздаёт всем собакам на площадке, пока мешок полностью не опустеет, а у самого хозяина от такой тяжести не иссякнут силы.",
+          en: "My phone battery finally gave out.",
+          ru: "Батарея на моём телефоне окончательно села.",
+          quizEn: "His legs gave out at the end of the marathon.",
+          quizRu: "Его силы иссякли (ноги отказали) в конце марафона."
+        },
+        {
+          id: "give_up",
+          pv: "Give up",
+          prep: "up",
+          prepLogic: "UP = вверх",
+          prepLogicRu: "вверх",
+          meaning: "Сдаваться / Бросать привычку",
+          mnemonic: "Хозяин пытается научить пса сложной команде за вкусняшку, но пёс только лает ГАВ!. Хозяин устаёт, поднимает руки ВВЕРХ (up) и сдаётся: Всё, бросаю эту затею!",
+          en: "Never give up on your dreams!",
+          ru: "Никогда не сдавайся (не отказывайся) от мечты!",
+          quizEn: "He decided to give up smoking last month.",
+          quizRu: "Он решил бросить курить в прошлом месяце."
+        }
+      ]
+    },
+    {
+      base: "LOOK",
+      meaning: "Смотреть",
+      icon: "🧅",
+      baseMnemonic: "Звучит один в один как обычный лук. Представь огромную луковицу с большими глазами и биноклем, которая внимательно СМОТРИТ на тебя.",
+      items: [
+        {
+          id: "look_after",
+          pv: "Look after",
+          prep: "after",
+          prepLogic: "AFTER = после / вслед за кем-то",
+          prepLogicRu: "после, вслед за кем-то",
+          meaning: "Присматривать / Заботиться",
+          mnemonic: "Ты ходишь по пятам ВСЛЕД (after) за маленькой луковкой, укрываешь её пледом и заботишься о ней, как няня.",
+          en: "Can you look after my dog tonight?",
+          ru: "Можешь присмотреть за моей собакой сегодня вечером?",
+          quizEn: "She looks after her little brother every evening.",
+          quizRu: "Она присматривает за своим младшим братом каждый вечер."
+        },
+        {
+          id: "look_for",
+          pv: "Look for",
+          prep: "for",
+          prepLogic: "FOR = для (цель поиска)",
+          prepLogicRu: "для, цель поиска",
+          meaning: "Искать что-то",
+          mnemonic: "Ты потерял луковицу ДЛЯ (for) супа и теперь заглядываешь под каждый шкаф в её поисках.",
+          en: "What are you looking for?",
+          ru: "Что ты ищешь?",
+          quizEn: "I am looking for my glasses everywhere.",
+          quizRu: "Я везде ищу свои очки."
+        },
+        {
+          id: "look_forward_to",
+          pv: "Look forward to",
+          prep: "forward",
+          prepLogic: "FORWARD = вперед",
+          prepLogicRu: "вперёд",
+          meaning: "Ждать с нетерпением",
+          mnemonic: "Луковица с биноклем высовывается далеко ВПЕРЁД (forward) из окна и зачёркивает дни в календаре в предвкушении отпуска.",
+          en: "I look forward to seeing you soon.",
+          ru: "С нетерпением жду скорой встречи с тобой.",
+          quizEn: "We are looking forward to our summer vacation.",
+          quizRu: "Мы с нетерпением ждём нашего летнего отпуска."
+        },
+        {
+          id: "look_out",
+          pv: "Look out",
+          prep: "out",
+          prepLogic: "OUT = наружу (выглянуть из укрытия)",
+          prepLogicRu: "наружу, выглянуть из укрытия",
+          meaning: "Остерегаться / Берегись, осторожно!",
+          mnemonic: "Ты высовываешься НАРУЖУ (out) из окна, а прямо на тебя летит гигантская луковица — Берегись, осторожно!",
+          en: "Look out! That car is moving fast!",
+          ru: "Осторожно! Та машина едет очень быстро!",
+          quizEn: "Look out! The floor is very slippery!",
+          quizRu: "Берегись, осторожно! Пол очень скользкий!"
+        },
+        {
+          id: "look_up",
+          pv: "Look up",
+          prep: "up",
+          prepLogic: "UP = вверх",
+          prepLogicRu: "вверх",
+          meaning: "Искать информацию (в словаре, Гугле)",
+          mnemonic: "Ты не знаешь перевод слова и поднимаешь глаза ВВЕРХ (up) к огромному экрану Гугла в небе, чтобы пробить ответ.",
+          en: "Look this word up in the dictionary.",
+          ru: "Посмотри это слово в словаре.",
+          quizEn: "You can look the train schedule up online.",
+          quizRu: "Ты можешь посмотреть расписание поездов в интернете."
+        }
+      ]
+    }
+  ];
+
+  // Автоматическая сортировка по алфавиту A-Z:
+  VERB_DB.sort((a, b) => a.base.localeCompare(b.base));
+  VERB_DB.forEach(group => {
+    group.items.sort((a, b) => a.pv.localeCompare(b.pv));
+  });
+
+  // ==========================================
+  // ОЧИСТКА СКОБОК, КАВЫЧЕК, ТОЧЕК И КОРРЕКТОР РУССКИХ УДАРЕНИЙ
+  // ==========================================
+  function cleanSpeechText(text) {
+    if (!text) return "";
+    return text
+      .replace(/\s*\([^)]*\)/g, " ") // Убираем всё в круглых скобках
+      .replace(/[()]/g, " ")
+      .replace(/[«»""„“]/g, "")      // Убираем кавычки
+      .replace(/\.+/g, " ")          // Убираем точки
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function fixRussianStress(text) {
+    if (!text) return "";
+    return cleanSpeechText(text)
+      .toLowerCase()
+      .replace(/берегись,\s*осторожно/gi, "берегись осторожно")
+      .replace(/несешь/gi, "несёшь")
+      .replace(/бьешь/gi, "бьёшь")
+      .replace(/раздаешь/gi, "раздаёшь")
+      .replace(/отдаешь/gi, "отдаёшь")
+      .replace(/зачеркивает/gi, "зачёркивает")
+      .replace(/тяж[её]лого/gi, "тяжо\u0301лого")
+      .replace(/моем/gi, "моём")
+      .replace(/вперед/gi, "вперёд")
+      .replace(/исчерпание/gi, "исчерпа\u0301ние")
+      .replace(/приготовил/gi, "пригото\u0301вил")
+      .replace(/мешка/gi, "мешка\u0301")
+      .replace(/тяжести/gi, "тя\u0301жести")
+      .replace(/выболтай/gi, "вы\u0301болтай")
+      .replace(/выболтал/gi, "вы\u0301болтал")
+      .replace(/выболтаешь/gi, "вы\u0301болтаешь")
+      .replace(/выболтать/gi, "вы\u0301болтать")
+      .replace(/вкусняшку/gi, "вкусня\u0301шку")
+      .replace(/вкусняшки/gi, "вкусня\u0301шки")
+      .replace(/вкусняшек/gi, "вкусня\u0301шек")
+      .replace(/лакомства/gi, "ла\u0301комства")
+      .replace(/лакомство/gi, "ла\u0301комство")
+      .replace(/окончательно села/gi, "оконча\u0301тельно се\u0301ла")
+      .replace(/села/gi, "се\u0301ла")
+      .replace(/большими глазами/gi, "больши\u0301ми глаза\u0301ми")
+      .replace(/большими/gi, "больши\u0301ми")
+      .replace(/луковкой/gi, "лу\u0301ковкой")
+      .replace(/луковицу/gi, "лу\u0301ковицу")
+      .replace(/луковица/gi, "лу\u0301ковица")
+      .replace(/звонят/gi, "звоня\u0301т")
+      .replace(/из окна/gi, "из окна\u0301")
+      .replace(/во дворе/gi, "во дворе\u0301")
+      .replace(/перевод слова/gi, "перево\u0301д сло\u0301ва")
+      .replace(/пример и перевод/gi, "приме\u0301р и перево\u0301д")
+      .replace(/к доске/gi, "к доске\u0301")
+      .replace(/ключи/gi, "ключи\u0301")
+      .replace(/очки/gi, "очки\u0301");
+  }
+
+  // ==========================================
+  // БЕСШОВНОЕ МЫЧАНИЕ "МММ..." + НАДЁЖНЫЙ АУДИО-ДВИЖОК (US + RU)
+  // ==========================================
+  let usVoice = null;
+  let ruVoice = null;
+  let speedMultiplier = 1.0;
+  let audioSessionId = 0;
+  let activeBtn = null;
+  let isPlaying = false;
+  let audioCtx = null;
+  let activeHumNodes = null;
+  let startDelayTimer = null;
+
+  const utterancePool = [];
+
+  function playVocalHum(durationMs, onComplete) {
+    try {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === "suspended") {
+        audioCtx.resume();
+      }
+
+      const now = audioCtx.currentTime;
+      const dur = durationMs / 1000;
+
+      const osc1 = audioCtx.createOscillator();
+      const osc2 = audioCtx.createOscillator();
+      osc1.type = "triangle";
+      osc2.type = "sine";
+
+      osc1.frequency.setValueAtTime(185, now);
+      osc1.frequency.exponentialRampToValueAtTime(200, now + dur * 0.5);
+      osc1.frequency.exponentialRampToValueAtTime(175, now + dur);
+
+      osc2.frequency.setValueAtTime(370, now);
+      osc2.frequency.exponentialRampToValueAtTime(400, now + dur * 0.5);
+      osc2.frequency.exponentialRampToValueAtTime(350, now + dur);
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(340, now);
+
+      const gain = audioCtx.createGain();
+      gain.gain.setValueAtTime(0.001, now);
+      gain.gain.linearRampToValueAtTime(0.24, now + 0.025);
+      gain.gain.setValueAtTime(0.24, now + Math.max(0.03, dur - 0.035));
+      gain.gain.linearRampToValueAtTime(0.001, now + dur);
+
+      osc1.connect(filter);
+      osc2.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc1.start(now);
+      osc2.start(now);
+      osc1.stop(now + dur);
+      osc2.stop(now + dur);
+
+      const timer = setTimeout(() => {
+        activeHumNodes = null;
+        if (onComplete) onComplete();
+      }, durationMs);
+
+      activeHumNodes = { osc1, osc2, timer };
+    } catch (e) {
+      if (onComplete) onComplete();
+    }
+  }
+
+  function stopVocalHum() {
+    if (activeHumNodes) {
+      clearTimeout(activeHumNodes.timer);
+      try { activeHumNodes.osc1.stop(); } catch (e) {}
+      try { activeHumNodes.osc2.stop(); } catch (e) {}
+      activeHumNodes = null;
+    }
+  }
+
+  function initVoices() {
+    const voices = window.speechSynthesis.getVoices();
+    if (!voices.length) return;
+
+    const usPreferred = [
+      "Google US English",
+      "Microsoft Aria",
+      "Microsoft Guy",
+      "Microsoft Jenny",
+      "Samantha",
+      "Alex",
+      "Siri"
+    ];
+
+    const enUSVoices = voices.filter(v => v.lang === "en-US" || v.lang === "en_US");
+    for (const name of usPreferred) {
+      const found = enUSVoices.find(v => v.name.includes(name));
+      if (found) { usVoice = found; break; }
+    }
+    if (!usVoice) {
+      usVoice = enUSVoices[0] || voices.find(v => v.lang.startsWith("en"));
+    }
+
+    const ruPreferred = [
+      "Google русский",
+      "Microsoft Dariya",
+      "Microsoft Svetlana",
+      "Microsoft Dmitry",
+      "Milena",
+      "Yuri"
+    ];
+    const ruVoices = voices.filter(v => v.lang.startsWith("ru"));
+    for (const name of ruPreferred) {
+      const found = ruVoices.find(v => v.name.includes(name));
+      if (found) { ruVoice = found; break; }
+    }
+    if (!ruVoice) ruVoice = ruVoices[0];
+  }
+
+  window.speechSynthesis.onvoiceschanged = initVoices;
+  setTimeout(initVoices, 300);
+
+  function setSpeed(rate) {
+    speedMultiplier = rate;
+    document.getElementById("speed-slow").classList.toggle("active", rate === 0.8);
+    document.getElementById("speed-norm").classList.toggle("active", rate === 1.0);
+    document.getElementById("speed-fast").classList.toggle("active", rate === 1.3);
+  }
+
+  function clearActiveBtn() {
+    if (activeBtn) {
+      activeBtn.classList.remove("playing-now");
+      activeBtn = null;
+    }
+    isPlaying = false;
+  }
+
+  function stopAudio() {
+    audioSessionId++;
+    if (startDelayTimer) {
+      clearTimeout(startDelayTimer);
+      startDelayTimer = null;
+    }
+    stopVocalHum();
+    utterancePool.length = 0;
+    window.speechSynthesis.cancel();
+    clearActiveBtn();
+  }
+
+  function playSequence(segments, triggerBtn = null) {
+    if (triggerBtn && activeBtn === triggerBtn && isPlaying) {
+      stopAudio();
+      return;
+    }
+
+    stopAudio();
+    if (triggerBtn) {
+      activeBtn = triggerBtn;
+      activeBtn.classList.add("playing-now");
+    }
+    isPlaying = true;
+
+    const currentSession = audioSessionId;
+    let index = 0;
+
+    function next() {
+      if (currentSession !== audioSessionId) return;
+      if (index >= segments.length) {
+        utterancePool.length = 0;
+        clearActiveBtn();
+        return;
+      }
+
+      const seg = segments[index++];
+
+      if (seg.type === "hum") {
+        const humDuration = Math.round((seg.duration || 220) / speedMultiplier);
+        playVocalHum(humDuration, () => {
+          if (currentSession !== audioSessionId) return;
+          const pauseAfterHum = seg.pause !== undefined ? seg.pause : 0;
+          if (pauseAfterHum <= 0) {
+            next();
+          } else {
+            setTimeout(next, pauseAfterHum);
+          }
+        });
+        return;
+      }
+
+      const rawText = seg.lang === "ru-RU" ? fixRussianStress(seg.text) : cleanSpeechText(seg.text);
+
+      if (!/[a-zA-Zа-яА-ЯёЁ0-9]/.test(rawText)) {
+        next();
+        return;
+      }
+
+      const utter = new SpeechSynthesisUtterance(rawText);
+      utterancePool.push(utter);
+
+      if (seg.lang === "en-US") {
+        utter.lang = "en-US";
+        if (usVoice) utter.voice = usVoice;
+        utter.rate = Math.min(1.8, (seg.rate || 0.98) * speedMultiplier);
+      } else {
+        utter.lang = "ru-RU";
+        if (ruVoice) utter.voice = ruVoice;
+        utter.rate = Math.min(1.8, (seg.rate || 1.06) * speedMultiplier);
+      }
+
+      let finished = false;
+      const advance = () => {
+        if (finished || currentSession !== audioSessionId) return;
+        finished = true;
+        const pauseMs = seg.pause !== undefined ? seg.pause : 20;
+        if (pauseMs <= 0) {
+          next();
+        } else {
+          setTimeout(next, pauseMs);
+        }
+      };
+
+      utter.onend = advance;
+      utter.onerror = (e) => {
+        if (e && (e.error === "canceled" || e.error === "interrupted")) return;
+        advance();
+      };
+
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+      window.speechSynthesis.speak(utter);
+    }
+
+    startDelayTimer = setTimeout(() => {
+      startDelayTimer = null;
+      next();
+    }, 60);
+  }
+
+  function playEnglishOnly(btn, pv, sentence) {
+    playSequence([
+      { text: pv, lang: "en-US", pause: 25 },
+      { text: sentence, lang: "en-US" }
+    ], btn);
+  }
+
+  function playPartLogic(btn, itemId) {
+    const item = getAllItems().find(i => i.id === itemId);
+    if (!item) return;
+    playSequence([
+      { text: "Логика частицы:", lang: "ru-RU", pause: 15 },
+      { text: item.prep, lang: "en-US", pause: 15 },
+      { text: item.prepLogicRu, lang: "ru-RU" }
+    ], btn);
+  }
+
+  function playPartMeaning(btn, itemId) {
+    const item = getAllItems().find(i => i.id === itemId);
+    if (!item) return;
+    playSequence([
+      { text: item.pv, lang: "en-US", pause: 20 },
+      { text: "Значение: " + item.meaning, lang: "ru-RU" }
+    ], btn);
+  }
+
+  function playPartMnemonic(btn, itemId) {
+    const item = getAllItems().find(i => i.id === itemId);
+    if (!item) return;
+    playSequence([
+      { text: "Сюжет-ассоциация: " + item.mnemonic, lang: "ru-RU" }
+    ], btn);
+  }
+
+  function playPartExample(btn, itemId) {
+    const item = getAllItems().find(i => i.id === itemId);
+    if (!item) return;
+    playSequence([
+      { text: "Пример и перевод:", lang: "ru-RU", pause: 20 },
+      { text: item.en, lang: "en-US", pause: 35 },
+      { text: item.ru, lang: "ru-RU" }
+    ], btn);
+  }
+
+  function playFullCard(btn, itemId) {
+    const item = getAllItems().find(i => i.id === itemId);
+    if (!item) return;
+
+    playSequence([
+      { text: item.pv, lang: "en-US", pause: 25 },
+      { text: "Логика частицы:", lang: "ru-RU", pause: 15 },
+      { text: item.prep, lang: "en-US", pause: 20 },
+      { text: item.prepLogicRu, lang: "ru-RU", pause: 25 },
+      { text: "Значение: " + item.meaning, lang: "ru-RU", pause: 25 },
+      { text: "Сюжет-ассоциация: " + item.mnemonic, lang: "ru-RU", pause: 25 },
+      { text: "Пример и перевод:", lang: "ru-RU", pause: 20 },
+      { text: item.en, lang: "en-US", pause: 35 },
+      { text: item.ru, lang: "ru-RU" }
+    ], btn);
+  }
+
+  function playBaseHero(btn, baseName) {
+    const group = VERB_DB.find(g => g.base === baseName);
+    if (!group) return;
+    playSequence([
+      { text: group.base, lang: "en-US", pause: 25 },
+      { text: group.meaning, lang: "ru-RU", pause: 20 },
+      { text: "Ассоциация на сам глагол: " + group.baseMnemonic, lang: "ru-RU" }
+    ], btn);
+  }
+
+  // ==========================================
+  // ВЕРТИКАЛЬНЫЙ СПИСОК ГЛАГОЛОВ (ЗАМОРОЖЕННЫЙ КАК В EXCEL)
+  // ==========================================
+  let currentFilter = VERB_DB[0].base;
+  let learnedIds = JSON.parse(localStorage.getItem("pv_learned_v1") || "[]");
+
+  function getAllItems() {
+    return VERB_DB.flatMap(g => g.items.map(i => ({ ...i, base: g.base })));
+  }
+
+  function updateProgressUI() {
+    const total = getAllItems().length;
+    const count = learnedIds.length;
+    const pct = Math.round((count / total) * 100);
+    document.getElementById("progress-text").textContent = `${count} из ${total} (${pct}%)`;
+    document.getElementById("progress-fill").style.width = `${pct}%`;
+  }
+
+  function setLearnedStatus(id, isLearned) {
+    if (isLearned) {
+      if (!learnedIds.includes(id)) learnedIds.push(id);
+    } else {
+      learnedIds = learnedIds.filter(i => i !== id);
+    }
+    localStorage.setItem("pv_learned_v1", JSON.stringify(learnedIds));
+    updateProgressUI();
+    renderCards();
+  }
+
+  function toggleVerbDropdown() {
+    const menu = document.getElementById("verb-dropdown-menu");
+    const isHidden = menu.classList.toggle("hidden");
+    document.getElementById("dropdown-arrow").textContent = isHidden ? "Выбрать глагол ▼" : "Закрыть ▲";
+  }
+
+  document.addEventListener("click", (e) => {
+    const wrap = document.getElementById("verb-selector-wrap");
+    const menu = document.getElementById("verb-dropdown-menu");
+    if (wrap && menu && !wrap.contains(e.target)) {
+      menu.classList.add("hidden");
+      document.getElementById("dropdown-arrow").textContent = "Выбрать глагол ▼";
+    }
+  });
+
+  function renderDropdownMenu() {
+    const menu = document.getElementById("verb-dropdown-menu");
+    const currentTitle = document.getElementById("dropdown-current-title");
+    const totalCount = getAllItems().length;
+
+    if (currentFilter === "ALL") {
+      currentTitle.textContent = `🔥 Все глаголы сразу (${totalCount})`;
+    } else {
+      const activeGroup = VERB_DB.find(g => g.base === currentFilter);
+      if (activeGroup) {
+        currentTitle.textContent = `${activeGroup.icon} ${activeGroup.base} — ${activeGroup.meaning} (${activeGroup.items.length})`;
+      }
+    }
+
+    const allBtnHTML = `
+      <button class="dropdown-item ${currentFilter === 'ALL' ? 'active' : ''}" onclick="setFilter('ALL')">
+        <span>🔥 <b>Все глаголы сразу</b></span>
+        <span class="dropdown-count">${totalCount} шт.</span>
+      </button>
+    `;
+
+    const listItemsHTML = VERB_DB.map(g => {
+      const active = currentFilter === g.base ? "active" : "";
+      return `
+        <button class="dropdown-item ${active}" onclick="setFilter('${g.base}')">
+          <span>${g.icon} <b>${g.base}</b> — ${g.meaning}</span>
+          <span class="dropdown-count">${g.items.length}</span>
+        </button>
+      `;
+    }).join("");
+
+    menu.innerHTML = allBtnHTML + listItemsHTML;
+  }
+
+  function setFilter(filter) {
+    stopAudio();
+    currentFilter = filter;
+    document.getElementById("verb-dropdown-menu").classList.add("hidden");
+    document.getElementById("dropdown-arrow").textContent = "Выбрать глагол ▼";
+    renderDropdownMenu();
+    renderCards();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function renderCards() {
+    const container = document.getElementById("cards-container");
+    const groups = currentFilter === "ALL" ? VERB_DB : VERB_DB.filter(g => g.base === currentFilter);
+
+    container.innerHTML = groups.map(group => {
+      const heroHTML = `
+        <div class="base-hero">
+          <div class="hero-badge">Главный образ базового глагола</div>
+          <div class="base-header">
+            <div>
+              <span class="base-title">${group.icon} ${group.base}</span>
+              <span class="base-sub">— ${group.meaning}</span>
+            </div>
+            <button class="btn-audio" onclick="playBaseHero(this, '${group.base}')">🔊 Озвучить образ</button>
+          </div>
+          <div class="base-mnemonic">
+            💡 <b>Ассоциация на сам глагол:</b> ${group.baseMnemonic}
+          </div>
+        </div>
+      `;
+
+      const itemsHTML = group.items.map(item => {
+        const isLearned = learnedIds.includes(item.id);
+        return `
+          <div class="pv-card ${isLearned ? 'learned' : ''}">
+            <div class="pv-top">
+              <div class="pv-name">${item.pv}</div>
+              <div class="memory-wrap">
+                <div class="memory-switch">
+                  <button class="mem-btn ${!isLearned ? 'not-learned-active' : ''}" onclick="setLearnedStatus('${item.id}', false)">
+                    🤔 Не помню
+                  </button>
+                  <button class="mem-btn ${isLearned ? 'learned-active' : ''}" onclick="setLearnedStatus('${item.id}', true)">
+                    ✅ Помню
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-box">
+              <div class="step-header">
+                <span class="step-label accent">1. Логика частицы</span>
+                <button class="btn-mini-audio" onclick="playPartLogic(this, '${item.id}')">🔊 Частица</button>
+              </div>
+              <div class="pv-prep-text">${item.prepLogic}</div>
+            </div>
+
+            <div class="step-box">
+              <div class="step-header">
+                <span class="step-label accent">2. Значение</span>
+                <button class="btn-mini-audio" onclick="playPartMeaning(this, '${item.id}')">🔊 Значение</button>
+              </div>
+              <div class="pv-meaning">${item.meaning}</div>
+            </div>
+
+            <div class="step-box warn-box">
+              <div class="step-header">
+                <span class="step-label warn">3. Сюжет-ассоциация</span>
+                <button class="btn-mini-audio" onclick="playPartMnemonic(this, '${item.id}')">🔊 Сюжет</button>
+              </div>
+              <div>${item.mnemonic}</div>
+            </div>
+
+            <div class="step-box example-step">
+              <div class="step-header">
+                <span class="step-label">4. Пример и перевод</span>
+                <button class="btn-mini-audio" onclick="playPartExample(this, '${item.id}')">🔊 Пример</button>
+              </div>
+              <div class="ex-en">${item.en}</div>
+              <div class="ex-ru">${item.ru}</div>
+            </div>
+
+            <div class="card-actions">
+              <button class="btn-audio" onclick="playEnglishOnly(this, '${item.pv.replace(/'/g, "\\'")}', '${item.en.replace(/'/g, "\\'")}')">
+                🔊 Произношение
+              </button>
+              <button class="btn-audio secondary" onclick="playFullCard(this, '${item.id}')">
+                🎧 Озвучить всё
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      return heroHTML + itemsHTML;
+    }).join("");
+  }
+
+  // ==========================================
+  // РЕЖИМ КВИЗА (ТРЕНАЖЕР / ЭКЗАМЕН С ИСТОРИЕЙ ОТВЕТОВ)
+  // ==========================================
+  let quizItems = [];
+  let quizIndex = 0;
+  let scoreCorrect = 0;
+  let scoreWrong = 0;
+
+  function switchMode(mode) {
+    stopAudio();
+    document.getElementById("tab-learn").classList.toggle("active", mode === "learn");
+    document.getElementById("tab-quiz").classList.toggle("active", mode === "quiz");
+    document.getElementById("learn-section").classList.toggle("hidden", mode !== "learn");
+    document.getElementById("quiz-section").classList.toggle("hidden", mode !== "quiz");
+    document.getElementById("verb-selector-wrap").classList.toggle("hidden", mode !== "learn");
+
+    if (mode === "quiz") startQuiz();
+  }
+
+  function updateQuizScoreUI() {
+    document.getElementById("score-correct").textContent = scoreCorrect;
+    document.getElementById("score-wrong").textContent = scoreWrong;
+  }
+
+  function startQuiz() {
+    const allPreps = ["up", "off", "back", "for", "in", "out", "away", "after", "on", "forward"];
+    quizItems = [...getAllItems()].sort(() => Math.random() - 0.5).map(item => {
+      const wrongPreps = allPreps.filter(p => p !== item.prep).sort(() => Math.random() - 0.5).slice(0, 3);
+      const options = [item.prep, ...wrongPreps].sort(() => Math.random() - 0.5);
+      return {
+        ...item,
+        options,
+        selectedAnswer: null
+      };
+    });
+    quizIndex = 0;
+    scoreCorrect = 0;
+    scoreWrong = 0;
+    updateQuizScoreUI();
+    renderQuestion();
+  }
+
+  function getHighlightedSentenceHTML(item) {
+    const regex = new RegExp(`\\b(${item.prep})\\b`, "i");
+    if (item.selectedAnswer === null) {
+      return item.quizEn.replace(regex, "_____");
+    }
+    if (item.selectedAnswer === item.prep) {
+      return item.quizEn.replace(regex, `<span class="filled-blank ok">$1</span>`);
+    } else {
+      return item.quizEn.replace(
+        regex,
+        `<span class="filled-blank err-picked">${item.selectedAnswer}</span><span class="filled-blank ok">$1</span>`
+      );
+    }
+  }
+
+  function buildQuestionSentenceSegments(item) {
+    const isAnswered = item.selectedAnswer !== null;
+    if (isAnswered) {
+      return [{ text: cleanSpeechText(item.quizEn), lang: "en-US", pause: 35 }];
+    }
+
+    const regex = new RegExp(`\\b${item.prep}\\b`, "i");
+    const parts = item.quizEn.split(regex);
+    const segs = [];
+
+    if (parts.length === 2) {
+      const leftClean = parts[0].replace(/[.,!?;:]+$/g, "").trim();
+      const rightClean = parts[1].replace(/^[.,!?;:\s]+|[.!?]+$/g, "").trim();
+      const hasRightWords = /[a-zA-Z0-9]/.test(rightClean);
+
+      if (leftClean) {
+        segs.push({ text: leftClean, lang: "en-US", pause: 0 });
+      }
+
+      segs.push({ type: "hum", duration: 220, pause: hasRightWords ? 0 : 25 });
+
+      if (hasRightWords) {
+        segs.push({ text: rightClean, lang: "en-US", pause: 35 });
+      }
+    } else {
+      segs.push({ text: cleanSpeechText(item.quizEn), lang: "en-US", pause: 35 });
+    }
+    return segs;
+  }
+
+  function renderQuestion() {
+    const item = quizItems[quizIndex];
+    const isAnswered = item.selectedAnswer !== null;
+
+    document.getElementById("q-counter").textContent = `Вопрос ${quizIndex + 1} из ${quizItems.length} • Глагол ${item.base}`;
+
+    document.getElementById("q-sentence").innerHTML = getHighlightedSentenceHTML(item);
+    document.getElementById("q-translation").textContent = `${item.quizRu} (${item.meaning})`;
+    document.getElementById("q-hint").innerHTML = `💡 <b>Подсказка-образ:</b> ${item.mnemonic.replace(/\([a-zA-Z]+\)/g, "")}`;
+
+    document.getElementById("q-prev").disabled = (quizIndex === 0);
+
+    document.getElementById("q-options").innerHTML = item.options.map(opt => {
+      let wrapClass = "quiz-opt-wrap";
+      let choiceBadge = "";
+
+      if (isAnswered) {
+        if (opt === item.prep) {
+          wrapClass += " correct";
+        } else if (opt === item.selectedAnswer && item.selectedAnswer !== item.prep) {
+          wrapClass += " wrong";
+        }
+        if (opt === item.selectedAnswer) {
+          choiceBadge = `<span class="user-choice-tag">Твой выбор</span>`;
+        }
+      }
+
+      return `
+        <div class="${wrapClass}" id="wrap-${opt}">
+          <button class="quiz-opt" ${isAnswered ? "disabled" : ""} onclick="checkAnswer('${opt}', '${item.prep}')">
+            <span>${opt}</span>
+            ${choiceBadge}
+          </button>
+          <button class="quiz-opt-speaker" onclick="playSingleOption(this, '${opt}')" title="Озвучить этот ответ">🔊</button>
+        </div>
+      `;
+    }).join("");
+  }
+
+  function playSingleOption(btn, optText) {
+    playSequence([
+      { text: optText, lang: "en-US" }
+    ], btn);
+  }
+
+  function playQuizOnlyQuestion(btn) {
+    const item = quizItems[quizIndex];
+    if (!item) return;
+
+    const segments = [
+      ...buildQuestionSentenceSegments(item),
+      { text: item.quizRu, lang: "ru-RU" }
+    ];
+    playSequence(segments, btn);
+  }
+
+  function playQuizOnlyOptions(btn) {
+    const item = quizItems[quizIndex];
+    if (!item) return;
+    const rapidCommaList = item.options.join(", ");
+    playSequence([
+      { text: rapidCommaList, lang: "en-US", rate: 1.06 }
+    ], btn);
+  }
+
+  function playQuizEverything(btn) {
+    const item = quizItems[quizIndex];
+    if (!item) return;
+
+    const rapidCommaList = item.options.join(", ");
+
+    const segments = [
+      ...buildQuestionSentenceSegments(item),
+      { text: item.quizRu, lang: "ru-RU", pause: 25 },
+      { text: "Подсказка-образ: " + item.mnemonic, lang: "ru-RU", pause: 25 },
+      { text: rapidCommaList, lang: "en-US", rate: 1.06 }
+    ];
+
+    playSequence(segments, btn);
+  }
+
+  function checkAnswer(selected, correct) {
+    const item = quizItems[quizIndex];
+    if (item.selectedAnswer !== null) return;
+
+    item.selectedAnswer = selected;
+
+    if (selected === correct) {
+      scoreCorrect++;
+    } else {
+      scoreWrong++;
+    }
+    updateQuizScoreUI();
+    renderQuestion();
+
+    if (selected === correct) {
+      playSequence([
+        { text: "Правильно!", lang: "ru-RU", pause: 25 },
+        { text: item.quizEn, lang: "en-US", pause: 35 },
+        { text: item.quizRu, lang: "ru-RU" }
+      ]);
+    } else {
+      playSequence([
+        { text: "Неправильно", lang: "ru-RU", pause: 25 },
+        { text: item.quizEn, lang: "en-US", pause: 35 },
+        { text: item.quizRu, lang: "ru-RU" }
+      ]);
+    }
+  }
+
+  function prevQuestion() {
+    if (quizIndex > 0) {
+      quizIndex--;
+      renderQuestion();
+      const questionBtn = document.getElementById("btn-quiz-question");
+      playQuizOnlyQuestion(questionBtn);
+    }
+  }
+
+  function nextQuestion() {
+    quizIndex = (quizIndex + 1) % quizItems.length;
+    renderQuestion();
+    const questionBtn = document.getElementById("btn-quiz-question");
+    playQuizOnlyQuestion(questionBtn);
+  }
+
+  renderDropdownMenu();
+  renderCards();
+  updateProgressUI();
+</script>
+
+</body>
+</html>
