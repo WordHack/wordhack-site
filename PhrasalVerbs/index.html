@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Phrasal Verbs Hack — Тренажер фразовых глаголов</title>
-  <link rel="icon" href="/favicon.jpg">
+  <link rel="icon" type="image/jpeg" href="../favicon.jpg">
   <style>
     :root {
       --bg-dark: #0b1120;
@@ -851,7 +851,7 @@
       <div class="progress-wrap">
         <div class="progress-labels">
           <span>Твой прогресс (отмечено «Помню»):</span>
-          <span id="progress-text">0 из 14 (0%)</span>
+          <span id="progress-text">0 из 35 (0%)</span>
         </div>
         <div class="progress-bar">
           <div class="progress-fill" id="progress-fill"></div>
@@ -917,7 +917,6 @@
 </div>
 
 <script>
-  // Функция плавного возврата к началу страницы
   function scrollToTop() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -1131,7 +1130,313 @@
           quizRu: "Ты можешь посмотреть расписание поездов в интернете."
         }
       ]
+    },
+    {
+      base: "GET",
+      meaning: "Получать / Становиться / Добираться",
+      icon: "⚡",
+      baseMnemonic: "Звучит как ГЕТры. Представь яркие реактивные ГЕТры на ногах: как только ты их надеваешь, ты сразу ПОЛУЧАЕШЬ суперскорость и легко ДОБИРАЕШЬСЯ куда угодно.",
+      items: [
+        {
+          id: "get_along",
+          pv: "Get along",
+          prep: "along",
+          prepLogic: "ALONG = вдоль / рядом по одной дороге",
+          prepLogicRu: "вдоль, рядом по одной дороге",
+          meaning: "Ладить / Находить общий язык",
+          mnemonic: "Двое бегунов в одинаковых ярких гетрах бегут РЯДОМ вдоль (along) одной дорожки, улыбаются и отлично ладят друг с другом.",
+          en: "We get along very well with our neighbors.",
+          ru: "Мы очень хорошо ладим с нашими соседями.",
+          quizEn: "Do you get along with your new boss?",
+          quizRu: "Ты ладишь со своим новым начальником?"
+        },
+        {
+          id: "get_back",
+          pv: "Get back",
+          prep: "back",
+          prepLogic: "BACK = назад",
+          prepLogicRu: "назад",
+          meaning: "Возвращаться обратно",
+          mnemonic: "Реактивные гетры сами несут тебя НАЗАД (back) домой после долгой прогулки.",
+          en: "What time did you get back last night?",
+          ru: "Во сколько ты вернулся вчера вечером?",
+          quizEn: "We need to get back home before dark.",
+          quizRu: "Нам нужно вернуться домой до темноты."
+        },
+        {
+          id: "get_in",
+          pv: "Get in",
+          prep: "in",
+          prepLogic: "IN = внутрь",
+          prepLogicRu: "внутрь",
+          meaning: "Садиться (в машину, такси) / Забираться внутрь",
+          mnemonic: "Ты в ярких гетрах ловко ныряешь ВНУТРЬ (in) низкой легковой машины или такси.",
+          en: "Get in the car, we are ready to go!",
+          ru: "Садись в машину, мы готовы ехать!",
+          quizEn: "She got in the taxi and closed the door.",
+          quizRu: "Она села в такси и закрыла дверь."
+        },
+        {
+          id: "get_off",
+          pv: "Get off",
+          prep: "off",
+          prepLogic: "OFF = с поверхности / прочь",
+          prepLogicRu: "с поверхности, прочь",
+          meaning: "Выходить (из автобуса, поезда, самолёта)",
+          mnemonic: "Ты в ярких гетрах спрыгиваешь С ПОВЕРХНОСТИ (off) высокой ступеньки автобуса или вагона прямо на платформу.",
+          en: "We get off at the next bus stop.",
+          ru: "Мы выходим на следующей автобусной остановке.",
+          quizEn: "Don't forget to get off the train at Central Station.",
+          quizRu: "Не забудь выйти из поезда на Центральном вокзале."
+        },
+        {
+          id: "get_over",
+          pv: "Get over",
+          prep: "over",
+          prepLogic: "OVER = через преграду сверху",
+          prepLogicRu: "через преграду сверху",
+          meaning: "Преодолеть / Оправиться (после болезни, трудностей)",
+          mnemonic: "Ты в мощных реактивных гетрах одним прыжком перепрыгигиваешь ЧЕРЕЗ (over) высокую стену проблем и снова чувствуешь себя прекрасно.",
+          en: "It took her a week to get over the flu.",
+          ru: "Ей потребовалась неделя, чтобы оправиться от гриппа.",
+          quizEn: "He finally got over his fear of flying.",
+          quizRu: "Он наконец преодолел свой страх полётов."
+        },
+        {
+          id: "get_up",
+          pv: "Get up",
+          prep: "up",
+          prepLogic: "UP = вверх",
+          prepLogicRu: "вверх",
+          meaning: "Вставать (с постели)",
+          mnemonic: "Утром звенит будильник, и пружинистые гетры сами подбрасывают тебя ВВЕРХ (up) с кровати.",
+          en: "I usually get up at seven in the morning.",
+          ru: "Я обычно встаю в семь утра.",
+          quizEn: "It is hard to get up early on Monday.",
+          quizRu: "Тяжело вставать рано в понедельник."
+        }
+      ]
+    },
+    {
+      base: "GO",
+      meaning: "Идти / Ехать / Двигаться",
+      icon: "🏎️",
+      baseMnemonic: "Звучит как гонщик ГОша или призыв ГОУ!. Представь неугомонного гонщика ГОшу, который всегда куда-то ИДЁТ или мчится вперёд.",
+      items: [
+        {
+          id: "go_away",
+          pv: "Go away",
+          prep: "away",
+          prepLogic: "AWAY = прочь / в сторону",
+          prepLogicRu: "прочь, в сторону",
+          meaning: "Уходить прочь / Уезжать",
+          mnemonic: "Гонщик Гоша машет рукой и уезжает далеко ПРОЧЬ (away) за горизонт.",
+          en: "Please don't go away, stay here.",
+          ru: "Пожалуйста, не уходи, останься здесь.",
+          quizEn: "The rain finally went away in the afternoon.",
+          quizRu: "Днём дождь наконец ушёл (прекратился)."
+        },
+        {
+          id: "go_back",
+          pv: "Go back",
+          prep: "back",
+          prepLogic: "BACK = назад",
+          prepLogicRu: "назад",
+          meaning: "Возвращаться туда, откуда пришёл",
+          mnemonic: "Гонщик Гоша вспомнил, что забыл шлем на старте, разворачивается и мчится НАЗАД (back).",
+          en: "I forgot my umbrella, I have to go back.",
+          ru: "Я забыл зонтик, мне нужно вернуться.",
+          quizEn: "She wants to go back to Paris next year.",
+          quizRu: "Она хочет вернуться в Париж в следующем году."
+        },
+        {
+          id: "go_on",
+          pv: "Go on",
+          prep: "on",
+          prepLogic: "ON = дальше по линии без остановки",
+          prepLogicRu: "дальше по линии без остановки",
+          meaning: "Продолжать / Происходить",
+          mnemonic: "Несмотря на крутой поворот, гонщик Гоша жмёт на газ и продолжает движение ДАЛЬШЕ (on) по трассе.",
+          en: "Please go on with your story!",
+          ru: "Пожалуйста, продолжай свой рассказ!",
+          quizEn: "What is going on in this room?",
+          quizRu: "Что происходит в этой комнате?"
+        },
+        {
+          id: "go_out",
+          pv: "Go out",
+          prep: "out",
+          prepLogic: "OUT = наружу из дома",
+          prepLogicRu: "наружу из дома",
+          meaning: "Выходить в свет (гулять, в кафе) / Гаснуть (о свете, огне)",
+          mnemonic: "Вечером гонщик Гоша наряжается и выходит НАРУЖУ (out) из дома погулять в кафе, а свет в его доме гаснет.",
+          en: "Let's go out for dinner tonight!",
+          ru: "Давай сходим куда-нибудь поужинать сегодня вечером!",
+          quizEn: "Suddenly all the lights went out.",
+          quizRu: "Внезапно весь свет погас."
+        },
+        {
+          id: "go_over",
+          pv: "Go over",
+          prep: "over",
+          prepLogic: "OVER = сверху от начала до конца",
+          prepLogicRu: "сверху от начала до конца",
+          meaning: "Тщательно проверять / Повторять (материал, отчёт)",
+          mnemonic: "Перед гонкой Гоша внимательно пробегает взглядом СВЕРХУ (over) по всей карте маршрута, проверяя каждую деталь.",
+          en: "Let's go over the plan one more time.",
+          ru: "Давай ещё раз внимательно проверим план.",
+          quizEn: "I need to go over my notes before the exam.",
+          quizRu: "Мне нужно повторить свои записи перед экзаменом."
+        }
+      ]
+    },
+    {
+      base: "PUT",
+      meaning: "Класть / Ставить / Помещать",
+      icon: "🏋️",
+      baseMnemonic: "Звучит как ПУД (старинная тяжёлая гиря весом в целый пуд). Представь, как силач берёт пудовую гирю и с грохотом КЛАДЁТ или СТАВИТ её на место.",
+      items: [
+        {
+          id: "put_away",
+          pv: "Put away",
+          prep: "away",
+          prepLogic: "AWAY = прочь / на своё место",
+          prepLogicRu: "прочь, на своё место",
+          meaning: "Убирать вещи на место",
+          mnemonic: "После тренировки силач аккуратно убирает пудовую гирю ПРОЧЬ (away) в шкаф на полку.",
+          en: "Please put away your toys before bed.",
+          ru: "Пожалуйста, убери свои игрушки на место перед сном.",
+          quizEn: "She folded the clothes and put them away.",
+          quizRu: "Она сложила одежду и убрала её в шкаф."
+        },
+        {
+          id: "put_down",
+          pv: "Put down",
+          prep: "down",
+          prepLogic: "DOWN = вниз",
+          prepLogicRu: "вниз",
+          meaning: "Положить / Опустить на землю / Записать на бумагу",
+          mnemonic: "Силач устал держать тяжёлый пуд на весу, опускает его ВНИЗ (down) на пол и записывает свой рекорд в блокнот.",
+          en: "Put down that heavy box right now!",
+          ru: "Поставь эту тяжёлую коробку на пол прямо сейчас!",
+          quizEn: "Let me put down your phone number.",
+          quizRu: "Дай мне записать твой номер телефона."
+        },
+        {
+          id: "put_off",
+          pv: "Put off",
+          prep: "off",
+          prepLogic: "OFF = отодвинуть прочь по времени",
+          prepLogicRu: "отодвинуть прочь по времени",
+          meaning: "Откладывать на потом",
+          mnemonic: "Силач смотрит на тяжёлую пудовую гирю, ленится её поднимать и отодвигает тренировку ПРОЧЬ (off) на завтра.",
+          en: "Never put off until tomorrow what you can do today.",
+          ru: "Никогда не откладывай на завтра то, что можешь сделать сегодня.",
+          quizEn: "They decided to put off the trip until Friday.",
+          quizRu: "Они решили отложить поездку до пятницы."
+        },
+        {
+          id: "put_on",
+          pv: "Put on",
+          prep: "on",
+          prepLogic: "ON = на себя / на поверхность",
+          prepLogicRu: "на себя, на поверхность",
+          meaning: "Надевать (одежду, обувь, очки)",
+          mnemonic: "Силач перед выходом на мороз надевает НА (on) себя тёплую шубу и шапку весом в целый пуд.",
+          en: "Put on your coat, it is cold outside.",
+          ru: "Надень пальто, на улице холодно.",
+          quizEn: "She put on her sunglasses and smiled.",
+          quizRu: "Она надела солнечные очки и улыбнулась."
+        },
+        {
+          id: "put_out",
+          pv: "Put out",
+          prep: "out",
+          prepLogic: "OUT = наружу / затушить до исчезновения",
+          prepLogicRu: "наружу, затушить до исчезновения",
+          meaning: "Тушить (огонь, пожар, свечу)",
+          mnemonic: "Силач ставит огромную пудовую гирю прямо на костёр и полностью выдавливает пламя НАРУЖУ (out), туша огонь.",
+          en: "Firefighters quickly put out the fire.",
+          ru: "Пожарные быстро потушили огонь.",
+          quizEn: "Don't forget to put out the campfire before leaving.",
+          quizRu: "Не забудь потушить костёр перед уходом."
+        }
+      ]
+    },
+    {
+      base: "TAKE",
+      meaning: "Брать / Забирать",
+      icon: "🕵️",
+      baseMnemonic: "Звучит как деТЕКтив (ТЕЙК — деТЕКтив). Представь ловкого деТЕКтива в шляпе, который быстро БЕРЁТ важные улики со стола.",
+      items: [
+        {
+          id: "take_after",
+          pv: "Take after",
+          prep: "after",
+          prepLogic: "AFTER = после / вслед за старшими",
+          prepLogicRu: "после, вслед за старшими",
+          meaning: "Быть похожим на (родителей, предков)",
+          mnemonic: "Юный детектив идёт след в след ПОСЛЕ (after) своего папы-сыщика — он перенял у него точно такой же характер и взгляд.",
+          en: "She really takes after her mother.",
+          ru: "Она очень похожа на свою маму.",
+          quizEn: "He takes after his grandfather in character.",
+          quizRu: "По характеру он пошёл в своего дедушку."
+        },
+        {
+          id: "take_back",
+          pv: "Take back",
+          prep: "back",
+          prepLogic: "BACK = назад",
+          prepLogicRu: "назад",
+          meaning: "Возвращать обратно (в магазин) / Брать слова назад",
+          mnemonic: "Детектив заметил, что лупа с трещиной, и относит её НАЗАД (back) в магазин.",
+          en: "I want to take this shirt back to the store.",
+          ru: "Я хочу вернуть эту рубашку обратно в магазин.",
+          quizEn: "I take back what I said yesterday.",
+          quizRu: "Я беру назад то, что сказал вчера."
+        },
+        {
+          id: "take_off",
+          pv: "Take off",
+          prep: "off",
+          prepLogic: "OFF = отрыв от поверхности / с себя",
+          prepLogicRu: "отрыв от поверхности, с себя",
+          meaning: "Взлетать (о самолёте) / Снимать (одежду, обувь)",
+          mnemonic: "Детектив одним движением снимает С СЕБЯ (off) плащ и на реактивном ранце отрывается ОТ ЗЕМЛИ (off), взлетая в небо.",
+          en: "Please take off your shoes at the door.",
+          ru: "Пожалуйста, сними обувь у двери.",
+          quizEn: "The plane will take off in ten minutes.",
+          quizRu: "Самолёт взлетит через десять минут."
+        },
+        {
+          id: "take_out",
+          pv: "Take out",
+          prep: "out",
+          prepLogic: "OUT = наружу изнутри",
+          prepLogicRu: "наружу изнутри",
+          meaning: "Выносить (мусор) / Доставать / Приглашать в кафе или кино",
+          mnemonic: "Детектив достаёт НАРУЖУ (out) из кармана билеты в ресторан и по пути выносит из дома пакет с мусором.",
+          en: "It is your turn to take out the trash.",
+          ru: "Твоя очередь выносить мусор.",
+          quizEn: "He took his wife out to a nice restaurant.",
+          quizRu: "Он сводил жену в хороший ресторан."
+        },
+        {
+          id: "take_over",
+          pv: "Take over",
+          prep: "over",
+          prepLogic: "OVER = сверху над всем",
+          prepLogicRu: "сверху над всем",
+          meaning: "Брать управление или контроль на себя",
+          mnemonic: "Главный детектив встаёт СВЕРХУ (over) над всей операцией и полностью берёт командование на себя.",
+          en: "Who will take over the company next year?",
+          ru: "Кто возьмёт на себя управление компанией в следующем году?",
+          quizEn: "Can you take over the wheel while I rest?",
+          quizRu: "Можешь сесть за руль (взять управление), пока я отдохну?"
+        }
+      ]
     }
+    // === СЮДА ВСТАВЛЯТЬ НОВЫЕ ГЛАГОЛЫ ===
   ];
 
   // Автоматическая сортировка по алфавиту A-Z:
@@ -1146,10 +1451,10 @@
   function cleanSpeechText(text) {
     if (!text) return "";
     return text
-      .replace(/\s*\([^)]*\)/g, " ") // Убираем всё в круглых скобках
+      .replace(/\s*\([^)]*\)/g, " ")
       .replace(/[()]/g, " ")
-      .replace(/[«»""„“]/g, "")      // Убираем кавычки
-      .replace(/\.+/g, " ")          // Убираем точки
+      .replace(/[«»""„“]/g, "")
+      .replace(/\.+/g, " ")
       .replace(/\s+/g, " ")
       .trim();
   }
@@ -1159,12 +1464,15 @@
     return cleanSpeechText(text)
       .toLowerCase()
       .replace(/берегись,\s*осторожно/gi, "берегись осторожно")
+      .replace(/перепрыгигиваешь/gi, "перепрыгиваешь")
       .replace(/несешь/gi, "несёшь")
       .replace(/бьешь/gi, "бьёшь")
       .replace(/раздаешь/gi, "раздаёшь")
       .replace(/отдаешь/gi, "отдаёшь")
       .replace(/зачеркивает/gi, "зачёркивает")
       .replace(/тяж[её]лого/gi, "тяжо\u0301лого")
+      .replace(/тяж[её]лую/gi, "тяжо\u0301лую")
+      .replace(/тяж[её]лый/gi, "тяжо\u0301лый")
       .replace(/моем/gi, "моём")
       .replace(/вперед/gi, "вперёд")
       .replace(/исчерпание/gi, "исчерпа\u0301ние")
@@ -1194,7 +1502,9 @@
       .replace(/пример и перевод/gi, "приме\u0301р и перево\u0301д")
       .replace(/к доске/gi, "к доске\u0301")
       .replace(/ключи/gi, "ключи\u0301")
-      .replace(/очки/gi, "очки\u0301");
+      .replace(/очки/gi, "очки\u0301")
+      .replace(/пудовую/gi, "пудо\u0301вую")
+      .replace(/пуд/gi, "пуд");
   }
 
   // ==========================================
@@ -1708,7 +2018,7 @@
   }
 
   function startQuiz() {
-    const allPreps = ["up", "off", "back", "for", "in", "out", "away", "after", "on", "forward"];
+    const allPreps = [...new Set(getAllItems().map(i => i.prep))];
     quizItems = [...getAllItems()].sort(() => Math.random() - 0.5).map(item => {
       const wrongPreps = allPreps.filter(p => p !== item.prep).sort(() => Math.random() - 0.5).slice(0, 3);
       const options = [item.prep, ...wrongPreps].sort(() => Math.random() - 0.5);
